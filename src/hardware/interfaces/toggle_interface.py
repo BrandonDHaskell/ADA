@@ -1,7 +1,7 @@
 import logging
 from hardware_interface import HardwareInterface
 
-class ToggleReader(HardwareInterface):
+class Toggle(HardwareInterface):
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
