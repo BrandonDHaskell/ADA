@@ -18,8 +18,7 @@ class DatabaseInterface(ABC):
         """
         Initialize the database connection.
         Implementations should log the successful initialization or any errors.
-        :param connection_info: Information required to establish a connection
-                                to the database.
+        :param connection_info: Information required to establish a connection to the database.
         """
         pass
 
@@ -30,7 +29,9 @@ class DatabaseInterface(ABC):
         Implementations should log this operation.
         :param obf_rfid: The obfuscated RFID of the member.
         :param member_info: Dictionary containing member information.
-        :return: member_info object or error if the database was not updated.
+        :return: member_info object if member successfully added.
+        :raises ValueError: if obf_rfid is not included in request.
+        :raises ValueError: if a member with the same RFID already exists.
         """
         pass
 
@@ -41,6 +42,7 @@ class DatabaseInterface(ABC):
         Implementations should log the retrieval operation.
         :param obf_rfid: The obfuscated RFID of the member.
         :return: member_info object or error if the database was not updated.
+        :raises ValueError: if obf_rfid is not included in request.
         """
         pass
 
@@ -52,5 +54,6 @@ class DatabaseInterface(ABC):
         :param obf_rfid: The obfuscated RFID of the member.
         :param member_info: Dictionary containing member information to update.
         :return: member_info object or error if the database was not updated.
+        :raises ValueError: if obf_rfid is not included in request.
         """
         pass
