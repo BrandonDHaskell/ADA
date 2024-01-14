@@ -30,6 +30,7 @@ class DatabaseInterface(ABC):
         Implementations should log this operation.
         :param obf_rfid: The obfuscated RFID of the member.
         :param member_info: Dictionary containing member information.
+        :return: member_info object or error if the database was not updated.
         """
         pass
 
@@ -39,7 +40,7 @@ class DatabaseInterface(ABC):
         Retrieve a member's details from the database.
         Implementations should log the retrieval operation.
         :param obf_rfid: The obfuscated RFID of the member.
-        :return: A dictionary containing the member's details or None if not found.
+        :return: member_info object or error if the database was not updated.
         """
         pass
 
@@ -50,6 +51,6 @@ class DatabaseInterface(ABC):
         Implementations should log the update operation.
         :param obf_rfid: The obfuscated RFID of the member.
         :param member_info: Dictionary containing member information to update.
-        :return: "updated" or raise exception if obf_rfid not found in db.
+        :return: member_info object or error if the database was not updated.
         """
         pass
