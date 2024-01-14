@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 class DatabaseInterface(ABC):
     """
     Abstract base class for database interactions for the ADA system.
-    This interface is designed to be adaptable to various database baskends.
+    This interface is designed to be adaptable to various database backends.
     """
 
     def __init__(self, connection_info):
