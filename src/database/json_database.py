@@ -1,13 +1,18 @@
 import logging
 import json
 from pathlib import Path
-from database_interface import DatabaseInterface
+from .database_interface import DatabaseInterface
 
 class JsonDatabase(DatabaseInterface):
     def __init__(self, filepath):
         super().__init__(filepath)
         self.filepath = Path(filepath)
         self.data = self._load_data()
+
+    def initialize(self, connection_info):
+        self.filepath = Path(connection_info)
+        self.data = self._load_data()
+        self.logger.info("JsonDatabase initialized with file: " + str(self.filepath))
 
     def _load_data(self):
         """ 
