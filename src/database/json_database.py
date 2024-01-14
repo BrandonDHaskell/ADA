@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from database_interface import DatabaseInterface
 
-class JsonDatabase(DatabaseInterface)
+class JsonDatabase(DatabaseInterface):
     def __init__(self, filepath):
         super().__init__(filepath)
         self.filepath = Path(filepath)
@@ -36,7 +36,7 @@ class JsonDatabase(DatabaseInterface)
         """
         try:
             with open(self.filepath, "w") as file:
-                json.dump(self.data, file, indet=4)
+                json.dump(self.data, file, indent=4)
             self.logger.info(f"Data successfully saved to {self.filepath}")
         except Exception as e:
             self.logger.error(f"Error saving data to {self.filepath}: {e}")
@@ -51,7 +51,7 @@ class JsonDatabase(DatabaseInterface)
             raise ValueError(f"Member with RFID {obf_rfid} already exists")
         
         self.data[obf_rfid] = member_info
-        self.save_data()
+        self._save_data()
         self.logger.info(f"Member added with RFID {obf_rfid}")
 
     def get_member(self, obf_rfid):
