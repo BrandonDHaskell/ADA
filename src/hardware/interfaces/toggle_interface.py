@@ -1,5 +1,5 @@
 import logging
-from hardware_interface import HardwareInterface
+from src.hardware.interfaces.hardware_interface import HardwareInterface
 
 class Toggle(HardwareInterface):
     def __init__(self):
