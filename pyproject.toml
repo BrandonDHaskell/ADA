@@ -1,3 +1,16 @@
+[project]
+name = "ADA"
+version = "0.2.0"
+description = "A project for Advanced Doorway Access (ADA) system."
+authors = [{name = "Brandon Haskell", email = "BrandonDHaskell@outlook.com"}]
+license = "MIT"
+requires-python = ">=3.11.7"
+
+[project.optional-dependencies]
+tests = [
+    "pytest=^7.4.4"
+]
+
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
