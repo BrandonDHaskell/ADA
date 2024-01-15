@@ -7,7 +7,6 @@ class JsonDatabase(DatabaseInterface):
     def __init__(self, filepath):
         super().__init__(filepath)
         self.filepath = Path(filepath)
-        self.data = self._load_data()
 
     def initialize(self, connection_info):
         self.filepath = Path(connection_info)
