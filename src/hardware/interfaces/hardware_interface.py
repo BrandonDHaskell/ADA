@@ -12,5 +12,5 @@ class HardwareInterface(ABC):
     Initialize the hardware. This might be just setting the GPIO pins to use.
     """
     @abstractmethod
-    def initialize(self):
+    def initialize(self, config_info):
         self.logger.info("Initializing hardware")
