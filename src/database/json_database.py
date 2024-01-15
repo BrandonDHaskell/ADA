@@ -16,6 +16,7 @@ class JsonDatabase(DatabaseInterface):
             self.filepath.parent.mkdir(parents=True, exist_ok=True)
             with open(self.filepath, "w") as file:
                 json.dump({}, file, indent=4)
+            self.logger.info(f"JSON Database successfully created.")
         self.data = self._load_data()
         self.logger.info("JsonDatabase initialized with file: " + str(self.filepath))
 
@@ -23,11 +24,7 @@ class JsonDatabase(DatabaseInterface):
         """ 
         Load data from the JSON file
         Raises Exceptions for JSON parsing and general read error
-        """
-        if not self.filepath.exists():
-            self.logger.info(f"Database file {self.filepath} not found. Creating a new one.")
-            return {}
-        
+        """       
         try:
             with open(self.filepath, "r") as file:
                 self.logger.info("Database loaded")
