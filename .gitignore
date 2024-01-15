@@ -1,3 +1,4 @@
-__pycache__
-/venv
-/json_database
+__pycache__/
+venv/
+json_database/
+.pytest_cache/
