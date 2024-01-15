@@ -37,3 +37,22 @@ def test_add_existing_member(db):
     db.add_member(member_info)
     with pytest.raises(ValueError) as e:
         db.add_member(member_info)
+
+def test_update_member(db):
+    member_info = {
+        "obf_rfid": "1234567891",
+        "member_level": "value",
+        "membership_status": "active",
+        "member_sponsor": "sponsor_obf_rfid"
+    }
+    member_update_info = {
+        "obf_rfid": "1234567891",
+        "member_level": "value",
+        "membership_status": "inactive",
+        "member_sponsor": "sponsor_obf_rfid"
+    }
+    with pytest.raises(KeyError) as e:
+        db.update_member(member_info)
+    
+    db.add_member(member_info)
+    assert db.update_member(member_update_info) == member_update_info
