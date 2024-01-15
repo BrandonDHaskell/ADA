@@ -1,5 +1,5 @@
 import logging
-from utils.logging_utils import setup_logging
+from src.utils.logging_utils import setup_logging
 from src.database.json_database import JsonDatabase
 
 # Configure basic logging for now
