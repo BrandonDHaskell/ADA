@@ -1,3 +1,5 @@
+from src.database.json_database import JsonDatabase
+
 # Pseudo Code
 
 # main()
@@ -38,3 +40,27 @@
 #                   - Print QR Code
 #               - If NB Sponsor does NOT have authority to sponsor:
 #                   - Print: "Sponsor not authorized"
+
+def main():
+    db_path = "json_database/db.json"
+
+    db = JsonDatabase(db_path)
+
+    member_info = {
+        "obf_rfid": "1",
+        "member_level": "value",
+        "membership_status": "active",
+        "member_sponsor": "sponsor_obf_rfid"
+    }
+    db.add_member(member_info)
+    member_info["obf_rfid"] = "2"
+    db.add_member(member_info)
+    member_info["obf_rfid"] = "3"
+    db.add_member(member_info)
+    member_info["obf_rfid"] = "4"
+    db.add_member(member_info)
+    member_info["obf_rfid"] = "5"
+    db.add_member(member_info)
+
+if __name__ == "__main__":
+    main()
