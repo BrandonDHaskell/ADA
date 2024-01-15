@@ -1,6 +1,6 @@
 import logging
 from src.utils.logging_utils import setup_logging
-from src.database.json_database import JsonDatabase
+from src.database.implementations.json_database import JsonDatabase
 
 # Configure basic logging for now
 # TODO - make this an app configuration

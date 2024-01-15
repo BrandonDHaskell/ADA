@@ -1,5 +1,5 @@
 import pytest
-from src.database.json_database import JsonDatabase
+from src.database.implementations.json_database import JsonDatabase
 from pathlib import Path
 
 @pytest.fixture

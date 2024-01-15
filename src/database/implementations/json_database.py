@@ -1,7 +1,7 @@
 import logging
 import json
 from pathlib import Path
-from .database_interface import DatabaseInterface
+from ..interfaces.database_interface import DatabaseInterface
 
 class JsonDatabase(DatabaseInterface):
     def __init__(self, filepath):
