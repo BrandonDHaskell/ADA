@@ -1,3 +1,4 @@
+import logging
 import RPi.GPIO as GPIO
 from src.hardware.interfaces.toggle_interface import ToggleReaderInterface
 
@@ -21,10 +22,12 @@ class PiGPIOSwitchReader(ToggleReaderInterface):
     """
     def __init__(self, config_info):
         super().__init__(config_info)
+        self.logger = logging.getLogger(__name__)
         self.pin_number = config_info["pin_number"] # Assumes pin_number is provided (TODO - add error checking)
         # Set defaults for normally_open and common_to_ground
         self.normally_open = config_info.get("normally_open", True)
         self.common_to_ground = config_info.get("common_to_ground", True )
+        self.logger.info(f"Initializing PiGPIOSwitchReader: pin_number={self.pin_number}, normally_open={self.normally_open}, common_to_ground={self.common_to_ground}")
 
     def initialize(self, config_info):
         GPIO.setmode(GPIO.BCM)  # BCM numbering
@@ -38,9 +41,11 @@ class PiGPIOSwitchReader(ToggleReaderInterface):
         pin_state = GPIO.input(self.pin_number)
         # Determines status based on normally_open configuration
         if self.normally_open:
-            return "inactive" if pin_state == GPIO.HIGH else "active"
+            status = "inactive" if pin_state == GPIO.HIGH else "active"
         else:
-            return "active" if pin_state == GPIO.HIGH else "inactive"
+            status = "active" if pin_state == GPIO.HIGH else "inactive"
+        self.logger.info(f"Read status from pin {self.pin_number}: {status}")
+        return status
         
     def cleanup(self):
         GPIO.cleanup(self.pin_number)
