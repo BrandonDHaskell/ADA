@@ -11,6 +11,11 @@ class JsonDatabase(DatabaseInterface):
 
     def initialize(self, connection_info):
         self.filepath = Path(connection_info)
+        if not self.filepath.exists():
+            self.logger.info(f"{self.filepath} not found. Creating a new one.")
+            self.filepath.parent.mkdir(parents=True, exist_ok=True)
+            with open(self.filepath, "w") as file:
+                json.dump({}, file, indent=4)
         self.data = self._load_data()
         self.logger.info("JsonDatabase initialized with file: " + str(self.filepath))
 
