@@ -1,6 +1,8 @@
 import logging
+import time
 from src.utils.logging_utils import setup_logging
 from src.database.implementations.json_database import JsonDatabase
+from src.hardware.implementations.pi_gpio_switch_reader import PiGPIOSwitchReader
 
 # Configure basic logging for now
 # TODO - make this an app configuration
@@ -47,6 +49,17 @@ setup_logging(logging.INFO)
 #               - If NB Sponsor does NOT have authority to sponsor:
 #                   - Print: "Sponsor not authorized"
 
+def test_switch_reader(switch_reader):
+    try:
+        while True:
+            status = switch_reader.get_status()
+            logging.info(f"Switch status: {status}")
+            time.sleep(1)
+    except KeyboardInterrupt:
+        logging.info("Stopping switch monitoring")
+    finally:
+        switch_reader.cleanup()
+
 def main():
     db_path = "json_database/db.json"
 
@@ -67,6 +80,18 @@ def main():
     db.add_member(member_info)
     member_info["obf_rfid"] = "5"
     db.add_member(member_info)
+
+    # Switch reader configuration
+    switch_config = {
+        "pin_number": 2,
+        "normally_open": True,
+        "common_to_ground": True
+    }
+    switch_reader = PiGPIOSwitchReader(switch_config)
+    switch_reader.initialize(switch_config)
+
+    # Start testing switch
+    test_switch_reader(switch_reader)
 
 if __name__ == "__main__":
     main()
