@@ -7,6 +7,7 @@ from src.hardware.implementations.pi_gpio_switch_reader import PiGPIOSwitchReade
 # Configure basic logging for now
 # TODO - make this an app configuration
 setup_logging(logging.INFO)
+logger = logging.getLogger('ADA')
 
 # Pseudo Code
 
