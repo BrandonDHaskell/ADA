@@ -7,19 +7,19 @@ class ToggleReaderInterface(HardwareInterface):
     An abstract class for reading hardware toggles (aka switches, pins, etc.)
     """
 
-    def __init__(self, config_info):
-        super().__init__()
-        self.config_info = config_info
-        self.logger.info(f"Initializing toggle reader with config info: {config_info}")
-        self.initialize(config_info)
+    def __init__(self, config):
+        super().__init__(config)
+        self.config = config
+        self.logger.info(f"Initializing toggle reader with config info: {config}")
+        self.initialize(config)
 
     @abstractmethod
-    def initialize(self, config_info):
+    def initialize(self):
         self.logger.info("Initializing toggle reader")
         """
         Initialize the toggle reader.
         Implementations should log the successful initialization or any errors.
-        :param config_info: Information needed to configure the toggle reader
+        :param config: Information needed to configure the toggle reader
         """
         pass
 
@@ -36,19 +36,19 @@ class ToggleOperatorInterface(HardwareInterface):
     An abstract class for operating/setting hardware toggles (aka switches, pins, lights, etc.)
     """
 
-    def __init__(self, config_info):
-        super().__init__()
-        self.config_info = config_info
-        self.logger.info(f"Initializing toggle operator with config info: {config_info}")
-        self.initialize(config_info)
+    def __init__(self, config):
+        super().__init__(config)
+        self.config = config
+        self.logger.info(f"Initializing toggle operator with config info: {config}")
+        self.initialize()
 
     @abstractmethod
-    def initialize(self, config_info):
+    def initialize(self):
         self.logger.info("Initializing toggle operator")
         """
         Initialize the toggle operator.
         Implementations should log the successful initialization or any errors.
-        :param config_info: Information needed to configure the toggle operator
+        :param config: Information needed to configure the toggle operator
         """
         pass
 
