@@ -50,11 +50,20 @@ logger = logging.getLogger('ADA')
 #               - If NB Sponsor does NOT have authority to sponsor:
 #                   - Print: "Sponsor not authorized"
 
-def test_switch_reader(switch_reader):
+def test_hardware(switch_reader, rfid_reader):
     try:
         while True:
+            # Check switch status
             status = switch_reader.get_status()
             logging.info(f"Switch status: {status}")
+
+            # Check for RFID tag
+            hashed_id = rfid_reader.scan_for_obf_id()
+            if hashed_id:
+                logger.info(f"Detected RFID tag with hashed ID: {hashed_id}")
+            else:
+                logger.info("No RFID tag detected.")
+
             time.sleep(1)
     except KeyboardInterrupt:
         logging.info("Stopping switch monitoring")
@@ -84,15 +93,20 @@ def main():
 
     # Switch reader configuration
     switch_config = {
-        "pin_number": 2,
+        "name": "DoorReedSwitch",
+        "pin_number": 4,
         "normally_open": True,
         "common_to_ground": True
     }
     switch_reader = PiGPIOSwitchReader(switch_config)
-    switch_reader.initialize(switch_config)
 
-    # Start testing switch
-    test_switch_reader(switch_reader)
+    rfid_config = {
+        "name": "mfrc522Reader"
+    }
+    rfid_reader = MFRC522Reader(rfid_config)
+
+    # Start testing hardware
+    test_hardware(switch_reader, rfid_reader)
 
 if __name__ == "__main__":
     main()
