@@ -11,7 +11,7 @@ class ToggleReaderInterface(HardwareInterface):
         super().__init__(config)
         self.config = config
         self.logger.info(f"Initializing toggle reader with config info: {config}")
-        self.initialize(config)
+        self.initialize()
 
     @abstractmethod
     def initialize(self):
