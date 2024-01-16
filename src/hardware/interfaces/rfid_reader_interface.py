@@ -8,7 +8,7 @@ class RFIDScanner(HardwareInterface):
     This should scan an id and hash it before returning.
     """
     def __init__(self, config):
-        super.__init__(config)
+        super().__init__(config)
 
     @abstractmethod
     def initialize(self):
