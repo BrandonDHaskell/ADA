@@ -21,12 +21,13 @@ class PiGPIOSwitchReader(ToggleReaderInterface):
         +-------------------+----------+---------------------------+
     """
     def __init__(self, config_info):
-        # Set defaults for normally_open and common_to_ground
+        # Set values and defaults for self before super
         self.normally_open = config_info.get("normally_open", True)
         self.common_to_ground = config_info.get("common_to_ground", True )
+        self.pin_number = config_info["pin_number"] # Assumes pin_number is provided (TODO - add error checking)
         super().__init__(config_info)
         self.logger = logging.getLogger(__name__)
-        self.pin_number = config_info["pin_number"] # Assumes pin_number is provided (TODO - add error checking)
+        
         self.logger.info(f"Initializing PiGPIOSwitchReader: pin_number={self.pin_number}, normally_open={self.normally_open}, common_to_ground={self.common_to_ground}")
 
     def initialize(self, config_info):
