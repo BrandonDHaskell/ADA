@@ -2,7 +2,7 @@ import logging
 from abc import abstractmethod
 from src.hardware.interfaces.hardware_interface import HardwareInterface
 
-class MFRC522Scanner(HardwareInterface):
+class RFIDScanner(HardwareInterface):
     """
     An abstract class for RFID card readers or similar hardware.
     This should scan an id and hash it before returning.
