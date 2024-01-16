@@ -20,17 +20,17 @@ class PiGPIOSwitchReader(ToggleReaderInterface):
         |       False       |   False  | HIGH=inactive, LOW=active |
         +-------------------+----------+---------------------------+
     """
-    def __init__(self, config_info):
+    def __init__(self, config):
         # Set values and defaults for self before super
-        self.normally_open = config_info.get("normally_open", True)
-        self.common_to_ground = config_info.get("common_to_ground", True )
-        self.pin_number = config_info["pin_number"] # Assumes pin_number is provided (TODO - add error checking)
-        super().__init__(config_info)
+        self.normally_open = config.get("normally_open", True)
+        self.common_to_ground = config.get("common_to_ground", True )
+        self.pin_number = config["pin_number"] # Assumes pin_number is provided (TODO - add error checking)
+        super().__init__(config)
         self.logger = logging.getLogger(__name__)
         
         self.logger.info(f"Initializing PiGPIOSwitchReader: pin_number={self.pin_number}, normally_open={self.normally_open}, common_to_ground={self.common_to_ground}")
 
-    def initialize(self, config_info):
+    def initialize(self):
         GPIO.setmode(GPIO.BCM)  # BCM numbering
         # Setup GPIO pin with pull-up or pull-down based on common_to_ground
         if self.common_to_ground:

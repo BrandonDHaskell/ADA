@@ -3,6 +3,7 @@ import time
 from src.utils.logging_utils import setup_logging
 from src.database.implementations.json_database import JsonDatabase
 from src.hardware.implementations.pi_gpio_switch_reader import PiGPIOSwitchReader
+from src.hardware.implementations.mfrc522_reader import MFRC522Reader
 
 # Configure basic logging for now
 # TODO - make this an app configuration

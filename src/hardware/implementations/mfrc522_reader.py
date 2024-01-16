@@ -9,13 +9,14 @@ class MFRC522Reader(RFIDScanner):
     A basic implementation of an RFID reader using an MFRC522 chip on a 
     Raspberry Pi GPIO.
     """
-    def __init__(sefl, config):
+    def __init__(self, config):
         super().__init__(config)
+        self.config = config
         self.reader = BasicMFRC522()
         self.initialize()
 
     def initialize(self):
-        self.logger.info(f"{config['name']} initialized")
+        self.logger.info(f"{self.config['name']} initialized")
 
     def scan_for_obf_id(self):
         self.logger.info("Checking for RFID card...")
