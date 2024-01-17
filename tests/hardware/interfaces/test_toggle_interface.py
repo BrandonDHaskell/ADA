@@ -17,12 +17,19 @@ class MockToggleReader(ToggleReaderInterface):
         return "active"  # Mock return value for testing
     
 class MockToggleOperator(ToggleOperatorInterface):
+    def __init__(self, config):
+        super().__init__(config)
+        # Assuming config is a dictionary with a key 'pin_number'
+        self.pin_number = config.get("pin_number")
+        self.status = "active"
+
     def initialize(self):
         pass
 
     def set_status(self, new_state):
         # Mock implementation for testing
-        return new_state
+        self.status = new_state
+        return self.status
 
 """
 Define configs for each toggle type
@@ -33,22 +40,20 @@ def mock_reader_config():
 
 @pytest.fixture
 def mock_operator_config():
-    return {"name": "TestOperator", "pin_number": 5}
+    return {"name": "TestOperator", "pin_number": 6}
 
 
 def test_toggle_reader_initialization(mock_reader_config):
-    mock_config = {"name": "TestReader", "pin_number": 5}
     reader = MockToggleReader(mock_reader_config)
     assert reader.pin_number == mock_reader_config["pin_number"]
     # Assuming the default status should be 'active' after initialization
     assert reader.get_status() == "active"
 
 def test_toggle_reader_get_status(mock_reader_config):
-    mock_config = {"name": "TestReader", "pin_number": 5}
     reader = MockToggleReader(mock_reader_config)
     assert reader.get_status() == "active"
 
-def test_toggle_operator_initialization():
+def test_toggle_operator_initialization(mock_operator_config):
     operator = MockToggleOperator(mock_operator_config)
     assert operator.pin_number == mock_operator_config["pin_number"]
     # Check if the status can be set correctly
@@ -56,6 +61,6 @@ def test_toggle_operator_initialization():
     # Assuming there's a way to retrieve the current status, e.g., a status attribute
     assert operator.status == "active"
 
-def test_toggle_operator_set_status():
+def test_toggle_operator_set_status(mock_operator_config):
     operator = MockToggleOperator(mock_operator_config)
     assert operator.set_status("active") == "active"
