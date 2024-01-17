@@ -4,12 +4,12 @@ from pathlib import Path
 from ..interfaces.database_interface import DatabaseInterface
 
 class JsonDatabase(DatabaseInterface):
-    def __init__(self, filepath):
-        super().__init__(filepath)
-        self.filepath = Path(filepath)
+    def __init__(self, config):
+        self.filepath = Path(config["connection_info"])
+        super().__init__(config)
+        
 
-    def initialize(self, connection_info):
-        self.filepath = Path(connection_info)
+    def initialize(self):
         if not self.filepath.exists():
             self.logger.info(f"{self.filepath} not found. Creating a new one.")
             self.filepath.parent.mkdir(parents=True, exist_ok=True)
