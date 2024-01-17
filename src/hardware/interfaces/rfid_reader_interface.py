@@ -1,4 +1,3 @@
-import logging
 from abc import abstractmethod
 from src.hardware.interfaces.hardware_interface import HardwareInterface
 
