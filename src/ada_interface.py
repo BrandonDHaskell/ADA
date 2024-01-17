@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from utils.logging_utils import setup_logging
+from src.utils.logging_utils import setup_logging
 
 # Initialize logging for the entire application
 setup_logging()

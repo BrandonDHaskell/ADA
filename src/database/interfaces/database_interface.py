@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from ada_interface import ADAInterface
+from ...ada_interface import ADAInterface
 
 class DatabaseInterface(ADAInterface):
     """
