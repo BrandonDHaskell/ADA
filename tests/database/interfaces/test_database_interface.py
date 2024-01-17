@@ -5,7 +5,7 @@ from src.database.interfaces.database_interface import DatabaseInterface
 class MockDatabase(DatabaseInterface):
     def __init__(self):
         # No connection info needed since we are not testing db connections
-        super().__init__("dummy_connection_info")
+        super().__init__({"name": "mock_database", "connection_info": "dummy_connection_info"})
 
     def initialize(self, connection_info):
         pass
