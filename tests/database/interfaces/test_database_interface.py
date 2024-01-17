@@ -4,10 +4,11 @@ from src.database.interfaces.database_interface import DatabaseInterface
 # Mock implementation of DatabaseInterface for testing
 class MockDatabase(DatabaseInterface):
     def __init__(self):
-        # No connection info needed since we are not testing db connections
-        super().__init__({"name": "mock_database", "connection_info": "dummy_connection_info"})
+        # Assuming no actual connection info is needed for the mock, pass a dummy value
+        dummy_connection_info = {"name": "mock_database", "connection_info": "dummy_connection_info"}
+        super().__init__(dummy_connection_info)
 
-    def initialize(self, connection_info):
+    def initialize(self):
         pass
 
     def add_member(self, obf_rfid, member_info):

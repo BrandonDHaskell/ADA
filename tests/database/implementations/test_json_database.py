@@ -7,8 +7,14 @@ def db():
     # Path to create temp database
     db_path = Path("tests/database/test_db.json")
     
+    # Create config dictionary for JsonDatabase
+    config = {
+        "name": "test_json_db",
+        "connection_info": db_path
+    }
+
     # Setup: Create a temp JsonDatabase instance
-    database = JsonDatabase(db_path)
+    database = JsonDatabase(config)
 
     # Yield database to the test
     yield database
