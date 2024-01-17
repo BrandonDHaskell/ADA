@@ -1,17 +1,15 @@
-import logging
 from abc import ABC, abstractmethod
+from ada_interface import ADAInterface
 
-"""
-An abstract class base for all hardware components in the ADA system.
-This should be the basic methods that all hardware uses with ADA.
-"""
-class HardwareInterface(ABC):
+class HardwareInterface(ADAInterface):
+    """
+    An abstract class base for all hardware components in the ADA system.
+    This should be the basic methods that all hardware uses with ADA.
+    """
+
     def __init__(self, config):
-        if not config.get("name"):
-            raise ValueError("A 'name' must be provided in the config")
-        
-        self.name = config["name"]
-        self.logger = logging.getLogger(self.name)
+        # Initialize the ADAInterface with the provided config
+        super().__init__(config)
 
         self.initialize()
         
@@ -20,4 +18,4 @@ class HardwareInterface(ABC):
     """
     @abstractmethod
     def initialize(self):
-        self.logger.info("Initializing hardware")
+        self.logger.debug("Initializing hardware")
