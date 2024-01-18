@@ -1,7 +1,7 @@
 import logging
 import hashlib
 import base64
-from mfrc522 import BasicMFRC522
+from mfrc522 import SimpleMFRC522
 from src.hardware.interfaces.rfid_reader_interface import RFIDScanner
 
 class MFRC522Reader(RFIDScanner):
@@ -12,7 +12,7 @@ class MFRC522Reader(RFIDScanner):
     def __init__(self, config):
         self.config = config
         super().__init__(config)
-        self.reader = BasicMFRC522()
+        self.reader = SimpleMFRC522()
         self.initialize()
 
     def initialize(self):
