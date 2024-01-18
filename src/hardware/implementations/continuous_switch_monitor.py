@@ -3,12 +3,19 @@ import time
 from src.hardware.interfaces.toggle_monitoring_interface import ToggleMonitoringInterface
 
 class ContinuousSwitchMonitor(ToggleMonitoringInterface):
-    def __init__(self, config, switch_reader):
+    def __init__(self, config):
         super().__init__(config)
-        self.switch_reader = switch_reader
 
         # Extract monitoring interval from config, with a default value
         self.monitoring_interval = config.get("monitoring_interval", 1)  # Default to 1 second
+        self.shared_state = config.get("threading_shared_var")
+        self.switch_reader = config.get("switch_reader")
+        
+        # Validate 
+        if self.shared_state is None:
+            raise ValueError("threading_shared_var must be provided in the config")
+        if self.switch_reader is None:
+            raise ValueError("switch_reader must be provided in the config")
 
         self.monitoring_thread = None
         self.running = False
