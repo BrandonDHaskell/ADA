@@ -25,6 +25,7 @@ class ContinuousMonitoringInterface(HardwareInterface, ABC):
     Integration:
     - This interface is typically used in conjunction with shared variables to
       communicate state changes to the main application thread.
+    - A thread enabled utility variable is also availble as part of ADA
 
     Note:
     - Ensure that implementations are thread-safe if they operate in a multi-threaded
