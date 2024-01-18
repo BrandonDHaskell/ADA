@@ -1,4 +1,3 @@
-import logging
 import RPi.GPIO as GPIO
 from src.hardware.interfaces.toggle_interface import ToggleOperatorInterface
 

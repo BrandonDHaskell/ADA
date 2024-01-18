@@ -20,7 +20,7 @@ class MillisecondFormatter(logging.Formatter):
 # Sets up logging for the entire app here
 def setup_logging(level="INFO"):
     logging.basicConfig(level=level)
-    formatter = MillisecondFormatter(fmt="[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s", datefmt="%Y-%m-%dT%H:%M:%S")
+    formatter = MillisecondFormatter(fmt="[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s", datefmt="%Y-%m-%dT%H:%M:%S")
     
     # Apply the formatter to all handlers
     for handler in logging.root.handlers:

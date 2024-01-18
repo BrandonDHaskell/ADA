@@ -1,4 +1,3 @@
-import logging
 import hashlib
 import base64
 from mfrc522 import SimpleMFRC522
