@@ -73,8 +73,12 @@ def test_hardware(switch_reader, rfid_reader):
 
 def main():
     db_path = "json_database/db.json"
+    db_config = {
+        "name": "ada_json_db",
+        "connection_info": db_path
+    }
 
-    db = JsonDatabase(db_path)
+    db = JsonDatabase(db_config)
 
     member_info = {
         "obf_rfid": "1",
