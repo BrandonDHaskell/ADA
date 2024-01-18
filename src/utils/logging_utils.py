@@ -14,7 +14,7 @@ class MillisecondFormatter(logging.Formatter):
     # Override name formatter to only the module name
     def format(self, record):
         # Shorten the logger's name to the last component
-        record.name = record.name.split('.')[-1]
+        # record.name = record.name.split('.')[-1] # not needed if using ada_interface
         return super(MillisecondFormatter, self).format(record)
 
 # Sets up logging for the entire app here
