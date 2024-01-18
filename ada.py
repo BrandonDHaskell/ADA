@@ -54,25 +54,25 @@ logger = logging.getLogger('ADA')
 #               - If NB Sponsor does NOT have authority to sponsor:
 #                   - Print: "Sponsor not authorized"
 
-def test_hardware(switch_reader, rfid_reader):
-    try:
-        while True:
-            # Check switch status
-            status = switch_reader.get_status()
-            logger.info(f"Switch status: {status}")
+# def test_hardware(switch_reader, rfid_reader):
+#     try:
+#         while True:
+#             # Check switch status
+#             status = switch_reader.get_status()
+#             logger.info(f"Switch status: {status}")
 
-            # Check for RFID tag
-            hashed_id = rfid_reader.scan_for_obf_id()
-            if hashed_id:
-                logger.info(f"Detected RFID tag with hashed ID: {hashed_id}")
-            else:
-                logger.info("No RFID tag detected.")
+#             # Check for RFID tag
+#             hashed_id = rfid_reader.scan_for_obf_id()
+#             if hashed_id:
+#                 logger.info(f"Detected RFID tag with hashed ID: {hashed_id}")
+#             else:
+#                 logger.info("No RFID tag detected.")
 
-            time.sleep(1)
-    except KeyboardInterrupt:
-        logger.info("Stopping switch monitoring")
-    finally:
-        switch_reader.cleanup()
+#             time.sleep(1)
+#     except KeyboardInterrupt:
+#         logger.info("Stopping switch monitoring")
+#     finally:
+#         switch_reader.cleanup()
 
 def main():
     
@@ -125,6 +125,17 @@ def main():
 
     try:
         while True:
+            # Check for updates in rfid_monitor_shared_var
+            rfid_state = rfid_monitor_shared_var.get()
+            if rfid_state is not None:
+                logger.info(f"RFID State Updated: {rfid_state}")
+                rfid_monitor_shared_var.reset()  # Reset after logging the update
+
+            # Check for updates in door_monitor_shared_var
+            door_state = door_monitor_shared_var.get()
+            if door_state is not None:
+                logger.info(f"Door State Updated: {door_state}")
+                door_monitor_shared_var.reset()  # Reset after logging the update
 
             time.sleep(0.5)
     except KeyboardInterrupt:
