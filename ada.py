@@ -2,12 +2,15 @@ import logging
 import time
 from src.utils.logging_utils import setup_logging
 from src.database.implementations.json_database import JsonDatabase
-from src.hardware.implementations.pi_gpio_switch_reader import PiGPIOSwitchReader
 from src.hardware.implementations.mfrc522_reader import MFRC522Reader
+from src.hardware.implementations.continuous_switch_monitor import ContinuousSwitchMonitor
+from src.hardware.implementations.pi_gpio_switch_reader import PiGPIOSwitchReader
+from src.hardware.implementations.pi_gpio_switch_operator import PiGPIOSwitchOperator
+from src.utils.threading_shared_variable import SharedVariable
 
 # Configure basic logging for now
 # TODO - make this an app configuration
-setup_logging(logging.INFO)
+setup_logging(logging.DEBUG)
 logger = logging.getLogger('ADA')
 
 # Pseudo Code
@@ -72,46 +75,99 @@ def test_hardware(switch_reader, rfid_reader):
         switch_reader.cleanup()
 
 def main():
-    db_path = "json_database/db.json"
+    
+    # Initialize database
     db_config = {
         "name": "ada_json_db",
-        "connection_info": db_path
+        "connection_info": "json_database/db.json"
     }
-
     db = JsonDatabase(db_config)
 
-    member_info = {
-        "obf_rfid": "1",
-        "member_level": "value",
-        "membership_status": "active",
-        "member_sponsor": "sponsor_obf_rfid"
-    }
-    db.add_member(member_info)
-    member_info["obf_rfid"] = "2"
-    db.add_member(member_info)
-    member_info["obf_rfid"] = "3"
-    db.add_member(member_info)
-    member_info["obf_rfid"] = "4"
-    db.add_member(member_info)
-    member_info["obf_rfid"] = "5"
-    db.add_member(member_info)
+    # Initialize MFRC522Reader
+    rfid_reader_config = {"name": "myRfidReader"}
+    rfid_reader = MFRC522Reader(rfid_reader_config)
 
-    # Switch reader configuration
-    switch_config = {
+    # Initialize a ContinuousSwitchMonitor for the MFRC522Reader
+    rfid_monitor_config = {"name": "rfidMonitor"}
+    rfid_monitor_shared_var = SharedVariable()
+    rfid_monitor = ContinuousSwitchMonitor(rfid_monitor_config, rfid_reader, rfid_monitor_shared_var)
+
+    # Initialize a DoorReedSwitch using PiGPIOSwitchReader
+    door_reed_switch_config = {
         "name": "DoorReedSwitch",
         "pin_number": 4,
         "normally_open": True,
         "common_to_ground": True
     }
-    switch_reader = PiGPIOSwitchReader(switch_config)
+    door_reed_switch = PiGPIOSwitchReader(door_reed_switch_config)
 
-    rfid_config = {
-        "name": "mfrc522Reader"
+    # Initialize a ContinuousSwitchMonitor for the DoorReedSwitch
+    door_monitor_config = {"name": "doorMonitor"}
+    door_monitor_shared_var = SharedVariable()
+    door_monitor = ContinuousSwitchMonitor(door_monitor_config, door_reed_switch, door_monitor_shared_var)
+
+    # Initialize a ModeSwitch using PiGPIOSwitchReader
+    mode_switch_config = {
+        "name": "ModeSwitch",
+        "pin_number": 18,
+        "normally_open": True,
+        "common_to_ground": True
     }
-    rfid_reader = MFRC522Reader(rfid_config)
+    mode_switch = PiGPIOSwitchReader(mode_switch_config)
 
-    # Start testing hardware
-    test_hardware(switch_reader, rfid_reader)
+    # Initialize a DoorLatch using PiGPIOSwitchOperator
+    door_latch_config = {"name": "DoorLatch", "pin_number": 21}  # Update the GPIO pin number
+    door_latch = PiGPIOSwitchOperator(door_latch_config)
+
+    # Start the monitoring threads
+    rfid_monitor.start_monitoring()
+    door_monitor.start_monitoring()
+
+    try:
+        while True:
+
+            time.sleep(0.5)
+    except KeyboardInterrupt:
+        logger.info("Keyboard interrupt detected. Shutting down ADA...")
+
+    finally:
+        # Stopping the monitors before exiting (cleanup)
+        rfid_monitor.stop_monitoring()
+        door_monitor.stop_monitoring()
+        logger.info("ADA shutdown completed.")
+    
+    # member_info = {
+    #     "obf_rfid": "1",
+    #     "member_level": "value",
+    #     "membership_status": "active",
+    #     "member_sponsor": "sponsor_obf_rfid"
+    # }
+    # db.add_member(member_info)
+    # member_info["obf_rfid"] = "2"
+    # db.add_member(member_info)
+    # member_info["obf_rfid"] = "3"
+    # db.add_member(member_info)
+    # member_info["obf_rfid"] = "4"
+    # db.add_member(member_info)
+    # member_info["obf_rfid"] = "5"
+    # db.add_member(member_info)
+
+    # # Switch reader configuration
+    # switch_config = {
+    #     "name": "DoorReedSwitch",
+    #     "pin_number": 4,
+    #     "normally_open": True,
+    #     "common_to_ground": True
+    # }
+    # switch_reader = PiGPIOSwitchReader(switch_config)
+
+    # rfid_config = {
+    #     "name": "mfrc522Reader"
+    # }
+    # rfid_reader = MFRC522Reader(rfid_config)
+
+    # # Start testing hardware
+    # test_hardware(switch_reader, rfid_reader)
 
 if __name__ == "__main__":
     main()
