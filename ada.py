@@ -83,20 +83,6 @@ def main():
     }
     db = JsonDatabase(db_config)
 
-    # Initialize MFRC522Reader
-    rfid_reader_config = {"name": "RfidReader"}
-    rfid_reader = MFRC522Reader(rfid_reader_config)
-
-    # Initialize a ContinuousSwitchMonitor for the MFRC522Reader
-    rfid_monitor_shared_var = SharedVariable() # create thread safe variable for ADA to track
-    rfid_monitor_config = {
-    "name": "RfidMonitor",
-    "monitoring_interval": 1,
-    "threading_shared_var": rfid_monitor_shared_var,
-    "switch_reader": rfid_reader
-    }
-    rfid_monitor = ContinuousSwitchMonitor(rfid_monitor_config)
-
     # Initialize a DoorReedSwitch using PiGPIOSwitchReader
     door_reed_switch_config = {
         "name": "DoorReedSwitch",
@@ -128,6 +114,20 @@ def main():
     # Initialize a DoorLatch using PiGPIOSwitchOperator
     door_latch_config = {"name": "DoorLatch", "pin_number": 21}  # Update the GPIO pin number
     door_latch = PiGPIOSwitchOperator(door_latch_config)
+
+    # Initialize MFRC522Reader
+    rfid_reader_config = {"name": "RfidReader"}
+    rfid_reader = MFRC522Reader(rfid_reader_config)
+
+    # Initialize a ContinuousSwitchMonitor for the MFRC522Reader
+    rfid_monitor_shared_var = SharedVariable() # create thread safe variable for ADA to track
+    rfid_monitor_config = {
+    "name": "RfidMonitor",
+    "monitoring_interval": 1,
+    "threading_shared_var": rfid_monitor_shared_var,
+    "switch_reader": rfid_reader
+    }
+    rfid_monitor = ContinuousSwitchMonitor(rfid_monitor_config)
 
     # Start the monitoring threads
     rfid_monitor.start_monitoring()
