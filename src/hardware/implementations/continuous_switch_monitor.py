@@ -18,6 +18,7 @@ class ContinuousSwitchMonitor(ToggleMonitoringInterface):
 
         self.monitoring_thread = None
         self.running = False
+        self.switch_reader.initialize()
 
     def initialize(self):
         self.switch_reader.initialize()

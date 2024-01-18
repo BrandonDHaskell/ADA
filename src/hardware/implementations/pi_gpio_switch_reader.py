@@ -43,8 +43,9 @@ class PiGPIOSwitchReader(ToggleReaderInterface):
             status = "inactive" if pin_state == GPIO.HIGH else "active"
         else:
             status = "active" if pin_state == GPIO.HIGH else "inactive"
-        self.logger.info(f"Read status from pin {self.pin_number}: {status}")
+        self.logger.debug(f"Read status from pin {self.pin_number}: {status}")
         return status
         
     def cleanup(self):
         GPIO.cleanup(self.pin_number)
+        self.logger.info(f"Cleaned up GPIO pin {self.pin_number}.")
