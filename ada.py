@@ -56,7 +56,7 @@ def test_hardware(switch_reader, rfid_reader):
         while True:
             # Check switch status
             status = switch_reader.get_status()
-            logging.info(f"Switch status: {status}")
+            logger.info(f"Switch status: {status}")
 
             # Check for RFID tag
             hashed_id = rfid_reader.scan_for_obf_id()
@@ -67,7 +67,7 @@ def test_hardware(switch_reader, rfid_reader):
 
             time.sleep(1)
     except KeyboardInterrupt:
-        logging.info("Stopping switch monitoring")
+        logger.info("Stopping switch monitoring")
     finally:
         switch_reader.cleanup()
 

@@ -1,4 +1,3 @@
-import logging
 import RPi.GPIO as GPIO
 from src.hardware.interfaces.toggle_interface import ToggleReaderInterface
 
@@ -26,7 +25,6 @@ class PiGPIOSwitchReader(ToggleReaderInterface):
         self.common_to_ground = config.get("common_to_ground", True )
         self.pin_number = config["pin_number"] # Assumes pin_number is provided (TODO - add error checking)
         super().__init__(config)
-        self.logger = logging.getLogger(__name__)
         
         self.logger.info(f"Initializing PiGPIOSwitchReader: pin_number={self.pin_number}, normally_open={self.normally_open}, common_to_ground={self.common_to_ground}")
 
