@@ -10,7 +10,6 @@ class PiGPIOSwitchOperator(ToggleOperatorInterface):
     def __init__(self, config):
         self.pin_number = config.get("pin_number")
         self.state = GPIO.LOW  # Default state
-        self.logger.info(f"Initializing PiGPIOSwitchOperator: pin_number={self.pin_number}")
         super().__init__(config)
         
         self.initialize()
