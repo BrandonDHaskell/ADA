@@ -3,7 +3,25 @@ from src.hardware.interfaces.hardware_interface import HardwareInterface
 
 class ToggleReaderInterface(HardwareInterface):
     """
-    An abstract class for reading hardware toggles (aka switches, pins, etc.)
+    ToggleReaderInterface is an abstract class for components responsible for 
+    reading the status of hardware toggles, such as switches or pins, in the ADA system.
+
+    Abstract Methods:
+    - initialize(): Prepare any necessary configurations for the toggle reader.
+    - get_status(): Retrieve the current status ('active' or 'inactive') of the toggle.
+
+    Usage:
+    - Extend this interface to implement specific logic for different types of toggle readers.
+    - Ensure robust error handling and logging for reliable operation.
+
+    Example:
+    class MySwitchReader(ToggleReaderInterface):
+        def initialize(self):
+            # Specific initialization logic
+            pass
+        def get_status(self):
+            # Logic to read the switch status
+            pass
     """
 
     def __init__(self, config):
@@ -32,7 +50,26 @@ class ToggleReaderInterface(HardwareInterface):
 
 class ToggleOperatorInterface(HardwareInterface):
     """
-    An abstract class for operating/setting hardware toggles (aka switches, pins, lights, etc.)
+    ToggleOperatorInterface is an abstract class for components that operate or set 
+    the status of hardware toggles, like switches, pins, or lights, in the ADA system.
+
+    Abstract Methods:
+    - initialize(): Set up the toggle operator with necessary configurations.
+    - set_status(new_state): Change the status of the toggle to 'active' or 'inactive'.
+
+    Usage:
+    - Implement this interface for hardware components that need to control toggles.
+    - Pay attention to thread safety and synchronization if toggles are accessed from
+      multiple threads.
+
+    Example:
+    class MySwitchOperator(ToggleOperatorInterface):
+        def initialize(self):
+            # Specific initialization logic
+            pass
+        def set_status(self, new_state):
+            # Logic to set the switch status
+            pass
     """
 
     def __init__(self, config):
