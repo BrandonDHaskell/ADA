@@ -33,8 +33,10 @@ class PiGPIOSwitchReader(ToggleReaderInterface):
         # Setup GPIO pin with pull-up or pull-down based on common_to_ground
         if self.common_to_ground:
             GPIO.setup(self.pin_number, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+            self.logger.debug(f"GPIO pin {self.pin_number} set as INPUT with PULL_UP")
         else:
             GPIO.setup(self.pin_number, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+            self.logger.debug(f"GPIO pin {self.pin_number} set as INPUT with PULL_DOWN")
 
     def get_status(self):
         pin_state = GPIO.input(self.pin_number)
