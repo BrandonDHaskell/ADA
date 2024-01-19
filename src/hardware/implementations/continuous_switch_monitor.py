@@ -36,7 +36,7 @@ class ContinuousSwitchMonitor(ToggleMonitoringInterface):
         self.running = False
         if self.monitoring_thread:
             self.monitoring_thread.join()
-            self.logger.info("Switch monitoring stopped")
+            self.logger.info("Switch monitoring thread joined")
         # self.switch_reader.cleanup()
 
     def _read_current_state(self):
@@ -50,3 +50,4 @@ class ContinuousSwitchMonitor(ToggleMonitoringInterface):
                 self.logger.debug(f"Switch state changed from {self.last_state} to {current_state}")
                 self.last_state = current_state  # Update the last state
             time.sleep(self.monitoring_interval)
+        self.logger.info("Switch Monitor loop has stopped")
