@@ -25,6 +25,9 @@ class RFIDContinuousMonitor(ContinuousMonitoringInterface):
         self.running = False
         if self.monitoring_thread:
             self.monitoring_thread.join()
+        # Call the cleanup method of MFRC522Reader
+        if hasattr(self.rfid_reader, 'cleanup'):
+            self.rfid_reader.cleanup()
 
     def _monitor_rfid(self):
         while self.running:
