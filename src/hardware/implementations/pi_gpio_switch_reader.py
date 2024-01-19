@@ -27,6 +27,7 @@ class PiGPIOSwitchReader(ToggleReaderInterface):
         super().__init__(config)
         
         self.logger.info(f"Initializing PiGPIOSwitchReader: pin_number={self.pin_number}, normally_open={self.normally_open}, common_to_ground={self.common_to_ground}")
+        self.initialize()
 
     def initialize(self):
         GPIO.setmode(GPIO.BCM)  # BCM numbering
