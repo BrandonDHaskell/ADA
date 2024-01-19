@@ -27,7 +27,8 @@ def setup_logging(level=None):
     if level is None:
         level = logging.INFO
 
-    log_directory = Path("../../logs/ada.log")
+    log_file_path = "../../logs/ada.log"
+    log_directory = Path(log_file_path)
     log_directory.mkdir(parents=True, exist_ok=True)
 
     # Create logger
