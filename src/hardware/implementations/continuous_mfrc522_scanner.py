@@ -12,6 +12,9 @@ class RFIDContinuousMonitor(ContinuousMonitoringInterface):
         self.monitoring_thread = None
         self.running = False
 
+    def initialize(self):
+        return super().initialize()
+    
     def start_monitoring(self):
         if not self.running:
             self.running = True
