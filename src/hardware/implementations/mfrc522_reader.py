@@ -19,7 +19,7 @@ class MFRC522Reader(RFIDScanner):
         self.logger.info(f"{self.config['name']} initialized")
 
     def scan_for_obf_id(self):
-        self.logger.info("Checking for RFID card...")
+        self.logger.debug("Checking for RFID card...")
         id = self.reader.read_id_no_block()
         if id:
             hashed_id = self._hash_id(str(id))
