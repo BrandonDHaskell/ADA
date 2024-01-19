@@ -28,7 +28,7 @@ class RFIDContinuousMonitor(ContinuousMonitoringInterface):
 
     def _monitor_rfid(self):
         while self.running:
-            rfid_id = self.rfid_reader.scan_for_obf_id()
+            rfid_id = self.mfrc522_reader.scan_for_obf_id()
             if rfid_id:
                 self.shared_state.set(rfid_id)
                 # Optionally, add a break here if you want to stop monitoring after the first successful scan
