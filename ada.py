@@ -153,7 +153,7 @@ def main():
                 logger.info(f"Door State Updated: {door_state}")
                 door_monitor_shared_var.reset()  # Reset after logging the update
 
-            logger.info(f"Mode State Updated: {mode_switch}")
+            logger.info(f"Mode State Updated: {mode_switch.get_status()}")
             
 
             time.sleep(0.5)
