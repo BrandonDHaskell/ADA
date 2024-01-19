@@ -1,0 +1,9 @@
+# Prod requirements
+RPi.GPIO==0.7.0
+python-dotenv==0.19.1
+mfrc522==0.0.7
+spidev==3.6
+
+# Dev requirements
+pytest==7.4.4
+pytest-mock==3.12.0
