@@ -27,12 +27,10 @@ class ToggleReaderInterface(HardwareInterface):
     def __init__(self, config):
         super().__init__(config)
         self.config = config
-        self.logger.info(f"Initializing toggle reader with config info: {config}")
         self.initialize()
 
     @abstractmethod
     def initialize(self):
-        self.logger.info("Initializing toggle reader")
         """
         Initialize the toggle reader.
         Implementations should log the successful initialization or any errors.
@@ -75,12 +73,10 @@ class ToggleOperatorInterface(HardwareInterface):
     def __init__(self, config):
         super().__init__(config)
         self.config = config
-        self.logger.info(f"Initializing toggle operator with config info: {config}")
         self.initialize()
 
     @abstractmethod
     def initialize(self):
-        self.logger.info("Initializing toggle operator")
         """
         Initialize the toggle operator.
         Implementations should log the successful initialization or any errors.
