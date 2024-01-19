@@ -50,5 +50,6 @@ class PiGPIOSwitchReader(ToggleReaderInterface):
         return status
         
     def cleanup(self):
+        GPIO.setmode(GPIO.BCM)
         GPIO.cleanup(self.pin_number)
         self.logger.info(f"Cleaned up GPIO pin {self.pin_number}.")
