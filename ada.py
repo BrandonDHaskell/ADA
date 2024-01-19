@@ -1,6 +1,9 @@
+import os
 import logging
 import time
 import RPi.GPIO as GPIO
+from dotenv import load_dotenv
+
 from src.utils.logging_utils import setup_logging
 from src.database.implementations.json_database import JsonDatabase
 from src.hardware.implementations.mfrc522_reader import MFRC522Reader
@@ -14,6 +17,8 @@ from src.utils.threading_shared_variable import SharedVariable
 # TODO - make this an app configuration
 setup_logging(logging.DEBUG)
 logger = logging.getLogger('ADA')
+
+load_dotenv()
 
 # Pseudo Code
 
@@ -81,8 +86,8 @@ def main():
     
     # Initialize database
     db_config = {
-        "name": "ada_json_db",
-        "connection_info": "json_database/db.json"
+        "name": os.getenv("JSON_DB_NAME", "default_JsonDB"),
+        "connection_info": os.getenv("JSON_DB_CONNECTION_INFO", "default_json_database/db.json")
     }
     db = JsonDatabase(db_config)
 
