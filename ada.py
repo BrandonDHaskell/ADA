@@ -145,7 +145,7 @@ def main():
             obf_id = rfid_monitor_shared_var.get()
             if obf_id is not None:
                 logger.info(f"RFID State Updated: {obf_id}")
-                db_obf_id = db.get_member(obf_id)
+                db_obf_id = db.get_member({"obf_rfid": obf_id})
                 if db_obf_id:
                     logger.info("Opening door")
                 else:
