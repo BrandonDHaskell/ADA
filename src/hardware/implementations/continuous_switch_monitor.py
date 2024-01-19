@@ -8,6 +8,7 @@ class ContinuousSwitchMonitor(ToggleMonitoringInterface):
         self.monitoring_interval = config.get("monitoring_interval", 1)  # Default to 1 second
         self.shared_state = config.get("threading_shared_var")
         self.switch_reader = config.get("switch_reader")
+        self.last_state = None
         super().__init__(config)
 
         # Validate 
