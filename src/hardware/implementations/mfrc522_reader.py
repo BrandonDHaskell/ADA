@@ -1,5 +1,6 @@
 import hashlib
 import base64
+import RPi.GPIO as GPIO
 from mfrc522 import SimpleMFRC522
 from src.hardware.interfaces.rfid_reader_interface import RFIDScanner
 
@@ -32,3 +33,7 @@ class MFRC522Reader(RFIDScanner):
         hash_obj = hashlib.sha256()
         hash_obj.update(raw_id.encode('utf-8'))
         return base64.b64encode(hash_obj.digest()).decode()
+    
+    def cleanup(self):
+        # Cleanup GPIO resources
+        GPIO.cleanup()
