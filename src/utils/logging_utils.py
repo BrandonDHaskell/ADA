@@ -26,9 +26,20 @@ def setup_logging(level=None):
     if level is None:
         level = logging.INFO
 
-    logging.basicConfig(level=level)
+    log_directory = Path("../../logs/ada.log")
+    log_directory.mkdir(parents=True, exist_ok=True)
+
+    # Create logger
+    logger = logging.getLogger()
+    logger.setLevel(level)
+
+    # Create handlers
+    file_handler = logging.FileHandler(log_file_path)
+    console_handler = logging.StreamHandler()
+
+    # Create formatters and add it to handlers
     formatter = MillisecondFormatter(fmt="[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s", datefmt="%Y-%m-%dT%H:%M:%S")
-    
+
     # Apply the formatter to all handlers
     for handler in logging.root.handlers:
         handler.setFormatter(formatter)
