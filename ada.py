@@ -86,25 +86,6 @@ def main():
     }
     db = JsonDatabase(db_config)
 
-    # Initialize a DoorReedSwitch using PiGPIOSwitchReader
-    door_reed_switch_config = {
-        "name": "DoorReedSwitch",
-        "pin_number": 4,
-        "normally_open": True,
-        "common_to_ground": True
-    }
-    door_reed_switch = PiGPIOSwitchReader(door_reed_switch_config)
-
-    # Initialize a ContinuousSwitchMonitor for the DoorReedSwitch
-    door_monitor_shared_var = SharedVariable() # create thread safe variable for ADA to track
-    door_monitor_config = {
-    "name": "DoorMonitor",
-    "monitoring_interval": 7,
-    "threading_shared_var": door_monitor_shared_var,
-    "switch_reader": door_reed_switch
-    }
-    door_monitor = ContinuousSwitchMonitor(door_monitor_config)
-
     # Initialize a ModeSwitch using PiGPIOSwitchReader
     mode_switch_config = {
         "name": "ModeSwitch",
@@ -120,6 +101,25 @@ def main():
         "pin_number": 21
     }  # Update the GPIO pin number
     door_latch = PiGPIOSwitchOperator(door_latch_config)
+
+    # Initialize a DoorReedSwitch using PiGPIOSwitchReader
+    door_reed_switch_config = {
+        "name": "DoorReedSwitch",
+        "pin_number": 4,
+        "normally_open": False,
+        "common_to_ground": True
+    }
+    door_reed_switch = PiGPIOSwitchReader(door_reed_switch_config)
+
+    # Initialize a ContinuousSwitchMonitor for the DoorReedSwitch
+    door_monitor_shared_var = SharedVariable() # create thread safe variable for ADA to track
+    door_monitor_config = {
+    "name": "DoorMonitor",
+    "monitoring_interval": 7,
+    "threading_shared_var": door_monitor_shared_var,
+    "switch_reader": door_reed_switch
+    }
+    door_monitor = ContinuousSwitchMonitor(door_monitor_config)
 
     # Initialize MFRC522Reader
     rfid_reader_config = {"name": "RfidReader"}
@@ -152,6 +152,9 @@ def main():
             if door_state is not None:
                 logger.info(f"Door State Updated: {door_state}")
                 door_monitor_shared_var.reset()  # Reset after logging the update
+
+            logger.info(f"Mode State Updated: {mode_switch}")
+            
 
             time.sleep(0.5)
     except KeyboardInterrupt:
