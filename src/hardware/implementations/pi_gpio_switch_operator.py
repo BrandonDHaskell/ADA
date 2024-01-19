@@ -27,13 +27,13 @@ class PiGPIOSwitchOperator(ToggleOperatorInterface):
         if new_state.lower() == "active":
             GPIO.output(self.pin_number, GPIO.HIGH)
             self.state = GPIO.HIGH
+            self.logger.info(f"Set GPIO pin {self.pin_number} to HIGH (active).")
         elif new_state.lower() == "inactive":
             GPIO.output(self.pin_number, GPIO.LOW)
             self.state = GPIO.LOW
+            self.logger.info(f"Set GPIO pin {self.pin_number} to LOW (inactive).")
         else:
             self.logger.error(f"Invalid state: {new_state}. State must be 'active' or 'inactive'.")
-
-        self.logger.info(f"Set GPIO pin {self.pin_number} to {new_state.upper()}.")
 
     def cleanup(self):
         """
