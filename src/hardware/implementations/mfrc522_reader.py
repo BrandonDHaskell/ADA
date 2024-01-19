@@ -23,7 +23,7 @@ class MFRC522Reader(RFIDScanner):
         id = self.reader.read_id_no_block()
         if id:
             hashed_id = self._hash_id(str(id))
-            self.logger.info(f"RFID card detected, hashed ID: {hashed_id}")
+            self.logger.debug(f"RFID card detected, hashed ID: {hashed_id}")
             return hashed_id
         return None
 

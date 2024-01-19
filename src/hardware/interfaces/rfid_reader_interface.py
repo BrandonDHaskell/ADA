@@ -11,7 +11,7 @@ class RFIDScanner(HardwareInterface):
 
     @abstractmethod
     def initialize(self):
-        self.logger.info("Initializing RFID scanner")
+        pass
 
     @abstractmethod
     def scan_for_obf_id(self):
