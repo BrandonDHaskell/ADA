@@ -24,6 +24,7 @@ class PiGPIOSwitchReader(ToggleReaderInterface):
         self.normally_open = config.get("normally_open", True)
         self.common_to_ground = config.get("common_to_ground", True )
         self.pin_number = config["pin_number"] # Assumes pin_number is provided (TODO - add error checking)
+        self.last_state = None
         super().__init__(config)
         
         self.logger.info(f"Initializing PiGPIOSwitchReader: pin_number={self.pin_number}, normally_open={self.normally_open}, common_to_ground={self.common_to_ground}")
