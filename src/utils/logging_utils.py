@@ -37,15 +37,13 @@ def setup_logging(level=None):
     logger = logging.getLogger()
     logger.setLevel(level)
 
-    # Create handlers
+    # Create file handler
     file_handler = logging.FileHandler(log_file_path)
-    console_handler = logging.StreamHandler()
+    logger.addHandler(file_handler)
 
     # Create formatters and add it to handlers
     formatter = MillisecondFormatter(fmt="[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s", datefmt="%Y-%m-%dT%H:%M:%S")
-    file_handler.setFormatter(formatter)
-    console_handler.setFormatter(formatter)
 
-    # Add handlers to the logger
-    logger.addHandler(file_handler)
-    logger.addHandler(console_handler)
+    # Apply the formatter to all handlers
+    for handler in logging.root.handlers:
+        handler.setFormatter(formatter)
