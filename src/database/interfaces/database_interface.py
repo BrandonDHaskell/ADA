@@ -59,7 +59,6 @@ class DatabaseInterface(ADAInterface):
         Implementations should log the successful initialization or any errors.
         :param connection_info: Information required to establish a connection to the database.
         """
-        self.logger.debug(f"Initializing  with config info: {self.config}")
 
     @abstractmethod
     def add_member(self, obf_rfid, member_info):
