@@ -44,7 +44,7 @@ class ToggleMonitoringInterface(ContinuousMonitoringInterface):
     def __init__(self, config):
         super().__init__(config)
         self._last_state = None
-        self.shared_state = SharedVariable()
+        self.shared_state = config.get("threading_shared_var")
 
     def get_toggle_status(self):
         current_state = self._read_current_state()
