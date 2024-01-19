@@ -50,7 +50,6 @@ class DatabaseInterface(ADAInterface):
         super().__init__(config)
         self.config = config
         self.connection_info = config["connection_info"]
-        self.initialize()
 
     @abstractmethod
     def initialize(self):

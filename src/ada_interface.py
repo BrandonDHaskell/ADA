@@ -65,7 +65,6 @@ class ADAInterface(ABC):
             raise ValueError("A 'name' must be provided in the config")
 
         self.logger = logging.getLogger(name)
-        self.initialize()
 
     @abstractmethod
     def initialize(self):
