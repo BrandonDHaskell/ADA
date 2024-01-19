@@ -37,7 +37,7 @@ class ContinuousSwitchMonitor(ToggleMonitoringInterface):
         if self.monitoring_thread:
             self.monitoring_thread.join()
             self.logger.info("Switch monitoring stopped")
-        self.switch_reader.cleanup()
+        # self.switch_reader.cleanup()
 
     def _read_current_state(self):
         return self.switch_reader.get_status()

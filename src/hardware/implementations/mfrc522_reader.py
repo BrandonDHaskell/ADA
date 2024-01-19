@@ -36,5 +36,5 @@ class MFRC522Reader(RFIDScanner):
     
     def cleanup(self):
         # Cleanup GPIO resources
-        GPIO.cleanup()
+        # GPIO.cleanup()
         self.logger.info("GPIO resources cleaned up")

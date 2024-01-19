@@ -39,5 +39,5 @@ class PiGPIOSwitchOperator(ToggleOperatorInterface):
         """
         Clean up by resetting the GPIO pin.
         """
-        GPIO.cleanup(self.pin_number)
+        # GPIO.cleanup(self.pin_number)
         self.logger.info(f"Cleaned up GPIO pin {self.pin_number}.")
