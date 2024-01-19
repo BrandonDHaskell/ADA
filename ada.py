@@ -1,5 +1,6 @@
 import logging
 import time
+import RPi.GPIO as GPIO
 from src.utils.logging_utils import setup_logging
 from src.database.implementations.json_database import JsonDatabase
 from src.hardware.implementations.mfrc522_reader import MFRC522Reader
@@ -76,6 +77,7 @@ logger = logging.getLogger('ADA')
 #         switch_reader.cleanup()
 
 def main():
+    GPIO.setmode(GPIO.BCM)
     
     # Initialize database
     db_config = {
