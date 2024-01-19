@@ -18,6 +18,7 @@ class ContinuousSwitchMonitor(ToggleMonitoringInterface):
 
         self.monitoring_thread = None
         self.running = False
+        self.logger.info("ContinuousSwitchMonitor initialized")
         self.switch_reader.initialize()
 
     def initialize(self):
@@ -28,11 +29,13 @@ class ContinuousSwitchMonitor(ToggleMonitoringInterface):
             self.running = True
             self.monitoring_thread = threading.Thread(target=self._monitor_switch)
             self.monitoring_thread.start()
+            self.logger.info("Switch monitoring started")
 
     def stop_monitoring(self):
         self.running = False
         if self.monitoring_thread:
             self.monitoring_thread.join()
+            self.logger.info("Switch monitoring stopped")
         self.switch_reader.cleanup()
 
     def _read_current_state(self):
@@ -40,5 +43,8 @@ class ContinuousSwitchMonitor(ToggleMonitoringInterface):
 
     def _monitor_switch(self):
         while self.running:
-            self.update_shared_state()  # Updates the shared state if there's a change
-            time.sleep(self.monitoring_interval)  # Sleep for the specified interval
+            new_state = self._read_current_state()
+            if new_state != self.shared_state.get():
+                self.shared_state.set(new_state)
+                self.logger.debug(f"Switch state updated: {new_state}")
+            time.sleep(self.monitoring_interval)
