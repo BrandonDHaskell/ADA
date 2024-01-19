@@ -47,7 +47,6 @@ class HardwareInterface(ADAInterface):
     def __init__(self, config):
         # Initialize the ADAInterface with the provided config
         super().__init__(config)
-        self.initialize()
         
     @abstractmethod
     def initialize(self):
