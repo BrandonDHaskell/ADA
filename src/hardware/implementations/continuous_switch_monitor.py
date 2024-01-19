@@ -43,8 +43,9 @@ class ContinuousSwitchMonitor(ToggleMonitoringInterface):
 
     def _monitor_switch(self):
         while self.running:
-            new_state = self._read_current_state()
-            if new_state != self.shared_state.get():
-                self.shared_state.set(new_state)
-                self.logger.debug(f"Switch state updated: {new_state}")
+            current_state = self._read_current_state()
+            if current_state != self.last_state:
+                self.shared_state.set(current_state)
+                self.logger.debug(f"Switch state changed from {self.last_state} to {current_state}")
+                self.last_state = current_state  # Update the last state
             time.sleep(self.monitoring_interval)
