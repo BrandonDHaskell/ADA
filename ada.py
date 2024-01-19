@@ -142,9 +142,14 @@ def main():
     try:
         while True:
             # Check for updates in rfid_monitor_shared_var
-            rfid_state = rfid_monitor_shared_var.get()
-            if rfid_state is not None:
-                logger.info(f"RFID State Updated: {rfid_state}")
+            obf_id = rfid_monitor_shared_var.get()
+            if obf_id is not None:
+                logger.info(f"RFID State Updated: {obf_id}")
+                db_obf_id = db.get_member(obf_id)
+                if db_obf_id:
+                    logger.info("Opening door")
+                else:
+                    logger.info("No access")
                 rfid_monitor_shared_var.reset()  # Reset after logging the update
 
             # Check for updates in door_monitor_shared_var
