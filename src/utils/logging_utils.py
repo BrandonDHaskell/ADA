@@ -27,9 +27,11 @@ def setup_logging(level=None):
     if level is None:
         level = logging.INFO
 
-    log_file_path = "../../logs/ada.log"
-    log_directory = Path(log_file_path)
-    log_directory.mkdir(parents=True, exist_ok=True)
+    # Go up two levels from the current script to the project root, then to the logs directory
+    script_directory = Path(__file__).resolve().parent.parent.parent
+    log_directory = script_directory / "logs"
+    log_directory.mkdir(parents=True, exist_ok=True)    # create log
+    log_file_path = log_directory / "ada.log"           # Define log file path
 
     # Create logger
     logger = logging.getLogger()
