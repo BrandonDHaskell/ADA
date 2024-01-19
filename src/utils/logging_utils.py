@@ -17,8 +17,15 @@ class MillisecondFormatter(logging.Formatter):
         # record.name = record.name.split('.')[-1] # not needed if using ada_interface
         return super(MillisecondFormatter, self).format(record)
 
-# Sets up logging for the entire app here
 def setup_logging(level="INFO"):
+    """
+    Sets up logging for the application with an optional log level.
+    :param level: The logging level, e.g., logging.DEBUG, logging.INFO, etc.
+                  Defaults to logging.INFO if none is provided.
+    """
+    if level is None:
+        level = logging.INFO
+        
     logging.basicConfig(level=level)
     formatter = MillisecondFormatter(fmt="[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s", datefmt="%Y-%m-%dT%H:%M:%S")
     
