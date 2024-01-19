@@ -6,6 +6,7 @@ from src.hardware.implementations.mfrc522_reader import MFRC522Reader
 from src.hardware.implementations.continuous_switch_monitor import ContinuousSwitchMonitor
 from src.hardware.implementations.pi_gpio_switch_reader import PiGPIOSwitchReader
 from src.hardware.implementations.pi_gpio_switch_operator import PiGPIOSwitchOperator
+from src.hardware.implementations.continuous_mfrc522_scanner import RFIDContinuousMonitor
 from src.utils.threading_shared_variable import SharedVariable
 
 # Configure basic logging for now
@@ -112,7 +113,10 @@ def main():
     mode_switch = PiGPIOSwitchReader(mode_switch_config)
 
     # Initialize a DoorLatch using PiGPIOSwitchOperator
-    door_latch_config = {"name": "DoorLatch", "pin_number": 21}  # Update the GPIO pin number
+    door_latch_config = {
+        "name": "DoorLatch", 
+        "pin_number": 21
+    }  # Update the GPIO pin number
     door_latch = PiGPIOSwitchOperator(door_latch_config)
 
     # Initialize MFRC522Reader
@@ -125,9 +129,9 @@ def main():
     "name": "RfidMonitor",
     "monitoring_interval": 1,
     "threading_shared_var": rfid_monitor_shared_var,
-    "switch_reader": rfid_reader
+    "mfrc522_reader": rfid_reader
     }
-    rfid_monitor = ContinuousSwitchMonitor(rfid_monitor_config)
+    rfid_monitor = RFIDContinuousMonitor(rfid_monitor_config)
 
     # Start the monitoring threads
     rfid_monitor.start_monitoring()
