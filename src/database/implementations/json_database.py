@@ -1,4 +1,3 @@
-import logging
 import json
 from pathlib import Path
 from ..interfaces.database_interface import DatabaseInterface
