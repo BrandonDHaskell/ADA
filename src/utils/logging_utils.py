@@ -27,23 +27,26 @@ def setup_logging(level=None):
     if level is None:
         level = logging.INFO
 
-    # Go up two levels from the current script to the project root, then to the logs directory
-    script_directory = Path(__file__).resolve().parent.parent.parent
-    log_directory = script_directory / "logs"
-    log_directory.mkdir(parents=True, exist_ok=True)    # create log
-    log_file_path = log_directory / "ada.log"           # Define log file path
-
-    # Create logger
     logger = logging.getLogger()
-    logger.setLevel(level)
+    if not logger.handlers:  # Check if handlers already exist
+        # Define log file path
+        script_directory = Path(__file__).resolve().parent.parent.parent
+        log_directory = script_directory / "logs"
+        log_directory.mkdir(parents=True, exist_ok=True)
+        log_file_path = log_directory / "ada.log"
 
-    # Create file handler
-    file_handler = logging.FileHandler(log_file_path)
-    logger.addHandler(file_handler)
+        # Create file handler
+        file_handler = logging.FileHandler(log_file_path)
+        console_handler = logging.StreamHandler()  # For console output
 
-    # Create formatters and add it to handlers
-    formatter = MillisecondFormatter(fmt="[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s", datefmt="%Y-%m-%dT%H:%M:%S")
+        # Create formatter and add it to handlers
+        formatter = MillisecondFormatter(fmt="[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s", datefmt="%Y-%m-%dT%H:%M:%S")
+        file_handler.setFormatter(formatter)
+        console_handler.setFormatter(formatter)
 
-    # Apply the formatter to all handlers
-    for handler in logging.root.handlers:
-        handler.setFormatter(formatter)
+        # Add handlers to the logger
+        logger.addHandler(file_handler)
+        logger.addHandler(console_handler)
+
+        # Set the logging level
+        logger.setLevel(level)
