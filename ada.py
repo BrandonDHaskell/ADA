@@ -185,7 +185,7 @@ def main():
                 door_monitor_shared_var.reset()  # Reset after logging the update
 
             # Check for updates in door_monitor_shared_var
-            mode_state = door_monitor_shared_var.get()
+            mode_state = mode_monitor_shared_var.get()
             if mode_state is not None:
                 logger.info(f"Mode State Updated: {mode_state}")
                 mode_monitor_shared_var.reset()  # Reset after logging the update
