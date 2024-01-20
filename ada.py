@@ -84,6 +84,10 @@ else:
 #     finally:
 #         switch_reader.cleanup()
 
+# Help method that generates a boolean value for .env
+def str_to_bool(s):
+    return s.lower() in ("true", "t", "1", "yes")
+
 def main():
     GPIO.setmode(GPIO.BCM)
     
@@ -98,8 +102,8 @@ def main():
     mode_switch_config = {
         "name": os.getenv("MODE_SWITCH_NAME", "default_ModeSwitch"),
         "pin_number": int(os.getenv("MODE_SWITCH_PIN_NUMBER", 18)),
-        "normally_open": os.getenv("MODE_SWITCH_NORMALLY_OPEN", "True").lower(),
-        "common_to_ground": os.getenv("MODE_SWITCH_COMMON_TO_GROUND", "True").lower()
+        "normally_open": str_to_bool(os.getenv("MODE_SWITCH_NORMALLY_OPEN", "True")),
+        "common_to_ground": str_to_bool(os.getenv("MODE_SWITCH_COMMON_TO_GROUND", "True"))
     }
     mode_switch = PiGPIOSwitchReader(mode_switch_config)
 
@@ -124,8 +128,8 @@ def main():
     door_reed_switch_config = {
         "name": os.getenv("REED_SWITCH_NAME", "default_ReedSwitch"),
         "pin_number": int(os.getenv("DOOR_SWITCH_PIN_NUMBER", 4)),
-        "normally_open": os.getenv("REED_SWITCH_NORMALLY_OPEN", "True").lower(),
-        "common_to_ground": os.getenv("REED_SWITCH_COMMON_TO_GROUND", "True").lower(),
+        "normally_open": str_to_bool(os.getenv("REED_SWITCH_NORMALLY_OPEN", "True")),
+        "common_to_ground": str_to_bool(os.getenv("REED_SWITCH_COMMON_TO_GROUND", "True")),
     }
     door_reed_switch = PiGPIOSwitchReader(door_reed_switch_config)
 
