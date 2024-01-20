@@ -1,6 +1,6 @@
 # Prod requirements
 RPi.GPIO==0.7.0
-python-dotenv==0.19.1
+python-dotenv==1.0.0
 mfrc522==0.0.7
 spidev==3.6
 

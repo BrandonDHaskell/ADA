@@ -18,7 +18,10 @@ from src.utils.threading_shared_variable import SharedVariable
 setup_logging(logging.DEBUG)
 logger = logging.getLogger('ADA')
 
-load_dotenv()
+if load_dotenv():
+    logger.info("Environment variable loaded")
+else:
+    logger.info("No environment variables passed, loading defaults")
 
 # Pseudo Code
 
