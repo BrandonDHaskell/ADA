@@ -93,9 +93,9 @@ class JsonDatabase(DatabaseInterface):
         # get member_info from obfuscated RFID
         member_info = self.data.get(obf_rfid)
         if member_info:
-            self.logger.info(f"Retrieved member with ID {obf_rfid}")
+            self.logger.debug(f"Retrieved member with ID {obf_rfid}")
         else:
-            self.logger.warning(f"Member with ID {obf_rfid} not found")
+            self.logger.debug(f"Member with ID {obf_rfid} not found")
         return member_info
     
     def update_member(self, member_info):
