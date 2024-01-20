@@ -103,6 +103,16 @@ def main():
     }
     mode_switch = PiGPIOSwitchReader(mode_switch_config)
 
+    # Initialize a ContinuousSwitchMonitor for the ModeSwitch
+    mode_monitor_shared_var = SharedVariable() # create thread safe variable for ADA to track
+    mode_monitor_config = {
+    "name": os.getenv("MODE_MONITOR_NAME", "default_ModeMonitor"),
+    "monitoring_interval": int(os.getenv("MODE_MONITOR_INTERVAL", 1)),
+    "threading_shared_var": mode_monitor_shared_var,
+    "switch_reader": mode_switch
+    }
+    mode_monitor = ContinuousSwitchMonitor(mode_monitor_config)
+
     # Initialize a DoorLatch using PiGPIOSwitchOperator
     door_latch_config = {
         "name": os.getenv("DOOR_SWITCH_NAME", "default_DoorLatch"), 
@@ -146,8 +156,10 @@ def main():
     rfid_monitor = RFIDContinuousMonitor(rfid_monitor_config)
 
     # Start the monitoring threads
-    rfid_monitor.start_monitoring()
     door_monitor.start_monitoring()
+    mode_monitor.start_monitoring()
+    rfid_monitor.start_monitoring()
+    
 
     try:
         while True:
@@ -168,10 +180,14 @@ def main():
                 logger.info(f"Door State Updated: {door_state}")
                 door_monitor_shared_var.reset()  # Reset after logging the update
 
-            logger.info(f"Mode State Updated: {mode_switch.get_status()}")
+            # Check for updates in door_monitor_shared_var
+            mode_state = door_monitor_shared_var.get()
+            if mode_state is not None:
+                logger.info(f"Mode State Updated: {mode_state}")
+                mode_monitor_shared_var.reset()  # Reset after logging the update
             
 
-            time.sleep(0.5)
+            time.sleep(0.05)
     except KeyboardInterrupt:
         logger.info("Keyboard interrupt detected. Shutting down ADA...")
 
