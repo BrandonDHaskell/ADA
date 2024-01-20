@@ -195,6 +195,7 @@ def main():
         # Stopping the monitors before exiting (cleanup)
         rfid_monitor.stop_monitoring()
         door_monitor.stop_monitoring()
+        mode_monitor.stop_monitoring()
         GPIO.cleanup()
         logger.info("ADA shutdown completed.")
     
