@@ -127,7 +127,7 @@ def main():
     # Initialize a DoorReedSwitch using PiGPIOSwitchReader
     door_reed_switch_config = {
         "name": os.getenv("REED_SWITCH_NAME", "default_ReedSwitch"),
-        "pin_number": int(os.getenv("DOOR_SWITCH_PIN_NUMBER", 4)),
+        "pin_number": int(os.getenv("REED_SWITCH_PIN_NUMBER", 4)),
         "normally_open": str_to_bool(os.getenv("REED_SWITCH_NORMALLY_OPEN", "True")),
         "common_to_ground": str_to_bool(os.getenv("REED_SWITCH_COMMON_TO_GROUND", "True")),
     }
