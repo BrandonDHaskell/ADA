@@ -19,7 +19,7 @@ setup_logging(logging.DEBUG)
 logger = logging.getLogger('ADA')
 
 if load_dotenv():
-    logger.info("Environment variable loaded")
+    logger.info("Environment variables loaded")
 else:
     logger.info("No environment variables passed, loading defaults")
 
@@ -96,7 +96,7 @@ def main():
 
     # Initialize a ModeSwitch using PiGPIOSwitchReader
     mode_switch_config = {
-        "name": os.getenv("ModeSwitch", "default_ModeSwitch"),
+        "name": os.getenv("MODE_SWITCH_NAME", "default_ModeSwitch"),
         "pin_number": int(os.getenv("MODE_SWITCH_PIN_NUMBER", 18)),
         "normally_open": os.getenv("MODE_SWITCH_NORMALLY_OPEN", "True").lower(),
         "common_to_ground": os.getenv("MODE_SWITCH_COMMON_TO_GROUND", "True").lower()
