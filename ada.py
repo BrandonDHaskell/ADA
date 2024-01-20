@@ -96,48 +96,50 @@ def main():
 
     # Initialize a ModeSwitch using PiGPIOSwitchReader
     mode_switch_config = {
-        "name": "ModeSwitch",
-        "pin_number": 18,
-        "normally_open": True,
-        "common_to_ground": True
+        "name": os.getenv("ModeSwitch", "default_ModeSwitch"),
+        "pin_number": int(os.getenv("MODE_SWITCH_PIN_NUMBER", 18)),
+        "normally_open": os.getenv("MODE_SWITCH_NORMALLY_OPEN", "True").lower(),
+        "common_to_ground": os.getenv("MODE_SWITCH_COMMON_TO_GROUND", "True").lower()
     }
     mode_switch = PiGPIOSwitchReader(mode_switch_config)
 
     # Initialize a DoorLatch using PiGPIOSwitchOperator
     door_latch_config = {
-        "name": "DoorLatch", 
-        "pin_number": 21
+        "name": os.getenv("DOOR_SWITCH_NAME", "default_DoorLatch"), 
+        "pin_number": int(os.getenv("DOOR_SWITCH_PIN_NUMBER", 21))
     }  # Update the GPIO pin number
     door_latch = PiGPIOSwitchOperator(door_latch_config)
 
     # Initialize a DoorReedSwitch using PiGPIOSwitchReader
     door_reed_switch_config = {
-        "name": "DoorReedSwitch",
-        "pin_number": 4,
-        "normally_open": False,
-        "common_to_ground": True
+        "name": os.getenv("REED_SWITCH_NAME", "default_ReedSwitch"),
+        "pin_number": int(os.getenv("DOOR_SWITCH_PIN_NUMBER", 4)),
+        "normally_open": os.getenv("REED_SWITCH_NORMALLY_OPEN", "True").lower(),
+        "common_to_ground": os.getenv("REED_SWITCH_COMMON_TO_GROUND", "True").lower(),
     }
     door_reed_switch = PiGPIOSwitchReader(door_reed_switch_config)
 
     # Initialize a ContinuousSwitchMonitor for the DoorReedSwitch
     door_monitor_shared_var = SharedVariable() # create thread safe variable for ADA to track
     door_monitor_config = {
-    "name": "DoorMonitor",
-    "monitoring_interval": 7,
+    "name": os.getenv("DOOR_MONITOR_NAME", "default_DoorMonitor"),
+    "monitoring_interval": int(os.getenv("DOOR_MONITOR_INTERVAL", 30)),
     "threading_shared_var": door_monitor_shared_var,
     "switch_reader": door_reed_switch
     }
     door_monitor = ContinuousSwitchMonitor(door_monitor_config)
 
     # Initialize MFRC522Reader
-    rfid_reader_config = {"name": "RfidReader"}
+    rfid_reader_config = {
+        "name": os.getenv("RFID_READER_NAME", "default_RfidReader")
+    }
     rfid_reader = MFRC522Reader(rfid_reader_config)
 
     # Initialize a ContinuousSwitchMonitor for the MFRC522Reader
     rfid_monitor_shared_var = SharedVariable() # create thread safe variable for ADA to track
     rfid_monitor_config = {
-    "name": "RfidMonitor",
-    "monitoring_interval": 1,
+    "name": os.getenv("RFID_MONITOR_NAME", "default_RfidMonitor"),
+    "monitoring_interval": int(os.getenv("RFID_MONITOR_INTERVAL", 5)),
     "threading_shared_var": rfid_monitor_shared_var,
     "mfrc522_reader": rfid_reader
     }
