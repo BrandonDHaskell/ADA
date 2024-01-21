@@ -56,7 +56,6 @@ class DatabaseInterface(ADAInterface):
         """
         Initialize the database connection.
         Implementations should log the successful initialization or any errors.
-        :param connection_info: Information required to establish a connection to the database.
         """
 
     @abstractmethod

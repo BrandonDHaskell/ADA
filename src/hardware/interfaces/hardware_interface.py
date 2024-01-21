@@ -45,12 +45,16 @@ class HardwareInterface(ADAInterface):
     """
     
     def __init__(self, config):
-        # Initialize the ADAInterface with the provided config
+        """
+        Initialize the ADAInterface with the provided config.
+        """
         super().__init__(config)
         
     @abstractmethod
     def initialize(self):
-        # Implement initialization logic specific to the hardware component.
-        # It is recommended to include logging in the implementation to track
-        # the initialization process and any potential issues.
+        """
+        Implement initialization logic specific to the hardware component.
+        It is recommended to include logging in the implementation to track
+        the initialization process and any potential issues.
+        """
         pass

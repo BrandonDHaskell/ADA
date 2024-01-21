@@ -12,6 +12,8 @@ class ToggleMonitoringInterface(ContinuousMonitoringInterface):
     Purpose:
     - To provide a standardized approach for continuously monitoring the state of toggle switches,
       ensuring thread-safe communication of state changes.
+    - Designed to abstract the complexity of continuous toggle monitoring and
+      provide a unified interface for different types of toggle switches.
 
     Thread Safety:
     - Uses SharedVariable utility to safely communicate state changes between different threads.
@@ -21,8 +23,15 @@ class ToggleMonitoringInterface(ContinuousMonitoringInterface):
       from the toggle switch hardware.
     - start_monitoring(), stop_monitoring(): Inherited from ContinuousMonitoringInterface, to be
       implemented for starting and stopping the monitoring process.
-    - get_toggle_status(): Should return the current state of the toggle switch only if it has changed
-      from the previous state.
+    - stop_monitoring(): Implement logic to stop the monitoring process and perform any necessary
+      cleanup.
+
+    Key Methods:
+    - get_toggle_status(): Returns the current state of the toggle switch only if
+      it has changed from the previous state. Utilizes SharedVariable for
+      communicating the updated state.
+    - update_shared_state(): A utility method to update the shared state if there
+      is a change in the toggle switch's status.
 
     Usage:
     - Create a subclass implementing the specific logic for monitoring a type of toggle switch.
@@ -36,9 +45,12 @@ class ToggleMonitoringInterface(ContinuousMonitoringInterface):
         # Implement other abstract methods...
 
     Note:
-    - Ensure that implementations handle hardware interactions and state changes efficiently and 
-      safely, particularly in multi-threaded scenarios.
-    - Proper logging and error handling are essential for reliable operation and troubleshooting.
+    - Implementations should consider efficient and reliable ways to monitor the toggle state,
+      minimizing resource usage while maintaining responsiveness.
+    - Proper logging, error handling, and exception management are crucial for diagnosing issues
+      and ensuring stable operation.
+    - Ensure that the implementation adheres to the interface contract and correctly communicates
+      state changes through SharedVariable.
     """
 
     def __init__(self, config):

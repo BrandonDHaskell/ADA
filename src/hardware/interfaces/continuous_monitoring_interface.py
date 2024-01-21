@@ -39,8 +39,15 @@ class ContinuousMonitoringInterface(HardwareInterface, ABC):
 
     @abstractmethod
     def start_monitoring(self):
+        """
+        This should initiate a loop that conintuously monitors a hardware deice for a state
+        change.
+        """
         pass
 
     @abstractmethod
     def stop_monitoring(self):
+        """
+        This should stop the loop and termintate the open thread if needed.
+        """
         pass
