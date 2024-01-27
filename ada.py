@@ -35,7 +35,7 @@ def _is_validate_member_data(member_data):
 
 # Check membership status
 def _is_member_status_active(member_data):
-    if member_data["membership_status"] == "active"
+    if member_data["membership_status"] == "active":
         return True
     return False
 
