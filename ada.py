@@ -110,7 +110,7 @@ def main():
         logger.info("Starting ADA")
         while True:
             # Set the mode state fron the mode_monitor_shared_var
-            mode_state = mode_switch.get_status()
+            mode_state = mode_switch.get_status().lower()
             logger.info(f"Current mode state: {mode_state}")
 
             # If 'inactive', then run standard routine logic
@@ -118,6 +118,7 @@ def main():
 
                 # Check for updates in rfid_monitor_shared_var
                 obf_id = rfid_monitor_shared_var.get()
+                logger.info(f"RFID State Updated: {obf_id}")
                 if obf_id is not None:
                     logger.info(f"RFID State Updated: {obf_id}")
 
