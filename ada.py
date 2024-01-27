@@ -111,7 +111,6 @@ def main():
         while True:
             # Set the mode state fron the mode_monitor_shared_var
             mode_state = mode_switch.get_status().lower()
-            logger.info(f"Current mode state: {mode_state}")
 
             # If 'inactive', then run standard routine logic
             if mode_state == "inactive":
