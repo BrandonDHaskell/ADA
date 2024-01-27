@@ -3,6 +3,9 @@ import logging
 import time
 import RPi.GPIO as GPIO
 from dotenv import load_dotenv
+from datetime import datetime, timedelta
+from dateutil import parser, rrule
+from zoneinfo import ZoneInfo
 
 from src.utils.logging_utils import setup_logging
 from src.database.implementations.json_database import JsonDatabase
@@ -12,6 +15,7 @@ from src.hardware.implementations.pi_gpio_switch_reader import PiGPIOSwitchReade
 from src.hardware.implementations.pi_gpio_switch_operator import PiGPIOSwitchOperator
 from src.hardware.implementations.continuous_mfrc522_scanner import RFIDContinuousMonitor
 from src.utils.threading_shared_variable import SharedVariable
+from src.schemas import member_schema
 
 # Configure basic logging for now
 # TODO - make this an app configuration
@@ -23,8 +27,61 @@ if load_dotenv():
 else:
     logger.info("No environment variables passed, loading defaults")
 
+# Check to confirm member data format follows ADA member_schema
+def _is_validate_member_data(member_data):
+    for key, expected_type in member_schema.items():
+        if key not in member_data or not isinstance(member_data[key], expected_type):
+            raise ValueError(f"Invalid member data for {key}")
 
-# Help method that generates a boolean value for .env
+# Check membership status
+def _is_member_status_active(member_data):
+    if member_data["membership_status"] == "active"
+        return True
+    return False
+
+# Check membership access interval
+def _is_within_access_interval(interval_str, scanner_tz):
+    try:
+        repeat, start_str, duration_str = interval_str.split("/")
+
+        # Parse the start time in the scanner's local timezone and duration
+        local_tz = ZoneInfo(scanner_tz)
+        start_time_local = parser.isoparse(start_str).replace(tzinfo=local_tz)
+
+        # Convert start time from local to UTC
+        start_time_utc = start_time_local.astimezone(ZoneInfo("UTC"))
+        duration = _parse_duration(duration_str)
+
+        # Create rule for repeating intervals
+        rule = rrule.rrule(rrule.DAILY, interval=5, dtstart=start_time_utc)
+
+        # Get current UTC time
+        current_time_utc = datetime.now(ZoneInfo("UTC"))
+
+        # Find the current interval in UTC
+        current_interval_start = rule.before(current_time_utc, inc=True)
+        current_interval_end = current_interval_start + duration
+
+        # Check if current UTC time is within the interval
+        return current_interval_start <= current_time_utc <= current_interval_end
+    except Exception as e:
+        logger.error(f"Error parsing interval: {e}")
+        return False
+
+# Helper function for access interval resolving
+def _parse_duration(duration_str):
+    # Parse the ISO 8601 duration string
+    period = parser.parse(duration_str)
+    return timedelta(days=period.day, hours=period.hour)
+
+def is_member_access_authorized(member_data):
+    pass
+
+# 
+def _sponsorship_is_authorized(member_data):
+    pass
+
+# Helper method that generates a python boolean value for .env inputs
 def str_to_bool(s):
     return s.lower() in ("true", "t", "1", "yes")
 
