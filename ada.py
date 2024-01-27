@@ -102,14 +102,14 @@ def main():
 
     # Start the monitoring threads
     door_monitor.start_monitoring()
-    mode_monitor.start_monitoring()
+    # mode_monitor.start_monitoring()
     rfid_monitor.start_monitoring()
     
 
     try:
         while True:
             # Set the mode state fron the mode_monitor_shared_var
-            mode_state = mode_monitor_shared_var.get()
+            mode_state = mode_switch.get_status()
 
             # If 'inactive', then run standard routine logic
             if mode_state == "inactive":
@@ -195,7 +195,7 @@ def main():
         # Stopping the monitors before exiting (cleanup)
         rfid_monitor.stop_monitoring()
         door_monitor.stop_monitoring()
-        mode_monitor.stop_monitoring()
+        # mode_monitor.stop_monitoring()
         GPIO.cleanup()
         logger.info("ADA shutdown completed.")
 
