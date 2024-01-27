@@ -108,30 +108,84 @@ def main():
 
     try:
         while True:
-            # Check for updates in rfid_monitor_shared_var
-            obf_id = rfid_monitor.thre.get()
-            if obf_id is not None:
-                logger.info(f"RFID State Updated: {obf_id}")
-                db_obf_id = db.get_member({"obf_rfid": obf_id})
-                if db_obf_id:
-                    logger.info("Opening door")
-                else:
-                    logger.info("No access")
-                rfid_monitor_shared_var.reset()  # Reset after logging the update
-
-            # Check for updates in door_monitor_shared_var
-            door_state = door_monitor_shared_var.get()
-            if door_state is not None:
-                logger.info(f"Door State Updated: {door_state}")
-                door_monitor_shared_var.reset()  # Reset after logging the update
-
-            # Check for updates in door_monitor_shared_var
+            # Set the mode state fron the mode_monitor_shared_var
             mode_state = mode_monitor_shared_var.get()
-            if mode_state is not None:
-                logger.info(f"Mode State Updated: {mode_state}")
-                mode_monitor_shared_var.reset()  # Reset after logging the update
-            
 
+            # If 'inactive', then run standard routine logic
+            if mode_state == "inactive":
+
+                # Check for updates in rfid_monitor_shared_var
+                obf_id = rfid_monitor_shared_var.get()
+                if obf_id is not None:
+                    logger.info(f"RFID State Updated: {obf_id}")
+
+                    # Validate against database
+                    is_member = db.get_member({"obf_rfid": obf_id})
+                    if is_member:
+                        logger.info("Access granted")
+                        # Unlock the door
+                        door_latch.set_status("active")
+                        logger.info("Door unlocked")
+
+                        # Keep the door unlocked for 7 seconds
+                        time.sleep(7)
+
+                        # Lock the door again
+                        door_latch.set_status("inactive")
+                        logger.info("Door locked")
+                    else:
+                        logger.info("Access denied")
+
+                    # Reset variable for next iteration
+                    rfid_monitor_shared_var.reset()
+
+                # Check for updates in door_monitor_shared_var
+                door_state = door_monitor_shared_var.get()
+                if door_state is not None:
+                    logger.info(f"Door State Updated: {door_state}")
+                    # Add notification logic here
+                    door_monitor_shared_var.reset()  # Reset after logging the update
+
+            # If 'active', then run add member logic
+            elif mode_state == "active":
+                # Get guest ID first
+                guest_obf_id = rfid_monitor_shared_var.get()
+
+                # if guest_obf_id was scanned and the ID is not in the database
+                if guest_obf_id is not None:
+                    logger.info(f"Guest ID scanned: {guest_obf_id}")
+
+                    # Assume guest is new and check if renewing temp access
+                    guest_is_new = True
+
+                    # If guest is not already in database
+                    if db.get_member({"obf_rfid": obf_id}) is not None:
+                        guest_is_new = False
+
+                    logger.info("Scanning for authorizing member")
+
+                    # Wait for authorizing member's scan
+                    time.sleep(5)
+                    sponsor_obf_id = rfid_monitor_shared_var.get()
+
+                    if sponsor_obf_id is not None:
+                        # Get sponsor info
+                        sponsor_info = db.get_member({"obf_rfid": sponsor_obf_id})
+
+                        if sponsor_info and sponsor_info["member_level"] == "Member":
+                            logger.info(f"Sponsor authorized: {sponsor_obf_id}")
+                            if guest_is_new:
+                                logger.info(f"Adding guest: {guest_obf_id}. Sponsored by: {sponsor_obf_id}")
+                            else:
+                                logger.info(f"Updating guest: {guest_obf_id}. Sponsored by: {sponsor_obf_id}")
+                        else:
+                            logger.info("Sponsor not authorized")
+
+            else:
+                logger.warning("Unknown mode state")
+
+            # Reset mode_switch for next iteration
+            mode_monitor_shared_var.reset()
             time.sleep(0.05)
     except KeyboardInterrupt:
         logger.info("Keyboard interrupt detected. Shutting down ADA...")
