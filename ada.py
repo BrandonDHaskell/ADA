@@ -118,9 +118,8 @@ def main():
 
                 # Check for updates in rfid_monitor_shared_var
                 obf_id = rfid_monitor_shared_var.get()
-                logger.info(f"RFID State Updated: {obf_id}")
                 if obf_id is not None:
-                    logger.info(f"RFID State Updated: {obf_id}")
+                    logger.info(f"RFID scanned: {obf_id}")
 
                     # Validate against database
                     is_member = db.get_member({"obf_rfid": obf_id})
