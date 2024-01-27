@@ -182,7 +182,8 @@ def main():
                             logger.info("Sponsor not authorized")
 
             else:
-                logger.warning("Unknown mode state")
+                if mode_state is not None:
+                    logger.warning(f"Unknown mode state")
 
             # Reset mode_switch for next iteration
             mode_monitor_shared_var.reset()
