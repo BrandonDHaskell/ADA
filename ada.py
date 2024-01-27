@@ -78,7 +78,7 @@ def main():
     mode_monitor = ContinuousSwitchMonitor({
     "name": os.getenv("MODE_MONITOR_NAME", "default_ModeMonitor"),
     "monitoring_interval": float(os.getenv("MODE_MONITOR_INTERVAL", 1)),
-    "threading_shared_var": SharedVariable(),
+    "threading_shared_var": mode_monitor_shared_var,
     "switch_reader": mode_switch
     })
 
@@ -87,7 +87,7 @@ def main():
     door_monitor = ContinuousSwitchMonitor({
     "name": os.getenv("DOOR_MONITOR_NAME", "default_DoorMonitor"),
     "monitoring_interval": float(os.getenv("DOOR_MONITOR_INTERVAL", 30)),
-    "threading_shared_var": SharedVariable(),
+    "threading_shared_var": door_monitor_shared_var,
     "switch_reader": door_reed_switch
     })
 
@@ -96,7 +96,7 @@ def main():
     rfid_monitor = RFIDContinuousMonitor({
     "name": os.getenv("RFID_MONITOR_NAME", "default_RfidMonitor"),
     "monitoring_interval": float(os.getenv("RFID_MONITOR_INTERVAL", 5)),
-    "threading_shared_var": SharedVariable(),
+    "threading_shared_var": rfid_monitor_shared_var,
     "mfrc522_reader": rfid_reader
     })
 
