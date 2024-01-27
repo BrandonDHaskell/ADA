@@ -123,7 +123,7 @@ def main():
                     # Validate against database
                     is_member = db.get_member({"obf_rfid": obf_id})
                     if is_member:
-                        logger.info("Access granted")
+                        logger.info("Access authorized")
                         # Unlock the door
                         door_latch.set_status("active")
                         logger.info("Door unlocked")
@@ -135,7 +135,7 @@ def main():
                         door_latch.set_status("inactive")
                         logger.info("Door locked")
                     else:
-                        logger.info("Access denied")
+                        logger.info("Access not authorized")
 
                     # Reset variable for next iteration
                     rfid_monitor_shared_var.reset()
