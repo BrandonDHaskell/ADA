@@ -140,12 +140,12 @@ def main():
                     # Reset variable for next iteration
                     rfid_monitor_shared_var.reset()
 
-                # Check for updates in door_monitor_shared_var
-                door_state = door_monitor_shared_var.get()
-                if door_state is not None:
-                    logger.info(f"Door State Updated: {door_state}")
-                    # Add notification logic here
-                    door_monitor_shared_var.reset()  # Reset after logging the update
+            # Check for updates in door_monitor_shared_var
+            door_state = door_monitor_shared_var.get()
+            if door_state is not None:
+                logger.info(f"Door State Updated: {door_state}")
+                # Add notification logic here
+                door_monitor_shared_var.reset()  # Reset after logging the update
 
             # If 'active', then run add member logic
             elif mode_state == "active":
