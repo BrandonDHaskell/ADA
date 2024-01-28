@@ -28,7 +28,7 @@ else:
     logger.info("No environment variables passed, loading defaults")
 
 # Check to confirm member data format follows ADA member_schema
-def _is_validate_member_data(member_data):
+def _is_valid_member_data(member_data):
     for key, expected_type in member_schema.items():
         if key not in member_data or not isinstance(member_data[key], expected_type):
             raise ValueError(f"Invalid member data for {key}")
@@ -40,20 +40,20 @@ def _is_member_status_active(member_data):
     return False
 
 # Check membership access interval
-def _is_within_access_interval(interval_str, scanner_tz):
+def _is_within_access_interval(interval_str):
     try:
         repeat, start_str, duration_str = interval_str.split("/")
 
         # Parse the start time in the scanner's local timezone and duration
-        local_tz = ZoneInfo(scanner_tz)
+        local_tz = ZoneInfo(os.getenv("SCANNER_TIME_ZONE", "UTC"))
         start_time_local = parser.isoparse(start_str).replace(tzinfo=local_tz)
 
-        # Convert start time from local to UTC
+        # Convert start time from local to UTC (system time)
         start_time_utc = start_time_local.astimezone(ZoneInfo("UTC"))
         duration = _parse_duration(duration_str)
 
         # Create rule for repeating intervals
-        rule = rrule.rrule(rrule.DAILY, interval=5, dtstart=start_time_utc)
+        rule = rrule.rrule(rrule.DAILY, interval=int(os.getenv("TEMP_ACCESS_DAYS", 3)), dtstart=start_time_utc)
 
         # Get current UTC time
         current_time_utc = datetime.now(ZoneInfo("UTC"))
@@ -74,12 +74,72 @@ def _parse_duration(duration_str):
     period = parser.parse(duration_str)
     return timedelta(days=period.day, hours=period.hour)
 
+
+
 def is_member_access_authorized(member_data):
-    pass
+    # Confirm ADA schemas are being followed
+    if not _is_valid_member_data(member_data):
+        logger.error("Member Data not in expected format")
+        return False
+    
+    # If member is not active they are not authorized
+    if not _is_member_status_active(member_data):
+        return False
+    
+    # If level is 'member' or 'admin' they have 24/7 access
+    if member_data["member_level"] == "member" or member_data["member_level"] == "admin":
+        return True
+    
+    # If level is 'guest' or 'philanthropist' they have limited access and we need to validate
+    # the scan time is within that interval of limited access
+    elif member_data["member_level"] == "guest" or member_data["member_level"] == "philanthropist":
+        
+        # If current scan time is within the temp access interval, grant access
+        if _is_within_access_interval(member_data):
+            return True
+        return False
+    
+    # If an unknown member_level is provided report error
+    else:
+        logger.error("Member level provided does not exist")
+    
+    return False
 
 # 
 def _sponsorship_is_authorized(member_data):
     pass
+
+def get_temp_access_interval():
+    """
+    Generates a repeating temporary access interval string based on current UTC date and environment variables.
+
+    Returns:
+    str: A repeating interval string in ISO 8601 format.
+    """
+    # Read values from environment variables
+    start_time_str = int(os.getenv("TEMP_ACCESS_DAY_START_TIME", "12:00"))
+    duration_hours = int(os.getenv("TEMP_ACCESS_DURATION_HOURS", "8"))
+    repeat_days = int(os.getenv("TEMP_ACCESS_DAYS", "1"))
+
+    # Current UTC date and time
+    current_utc = datetime.now(ZoneInfo("UTC"))
+
+    # Parse start hour and minute
+    start_hour, start_minute = map(int, start_time_str.split(':'))
+
+    # Start of the access interval (today at the specified start_hour and start_minute, in UTC)
+    start_of_interval = current_utc.replace(hour=start_hour, minute=start_minute, second=0, microsecond=0)
+
+    # Adjust if the start time has already passed for today
+    if start_of_interval < current_utc:
+        start_of_interval += timedelta(days=1)
+
+    # Duration of the access interval
+    duration = timedelta(hours=duration_hours)
+
+    # Format the interval in ISO 8601 repeating interval format
+    interval_str = f"R{repeat_days}/{start_of_interval.isoformat()}/P{duration.days}DT{duration.seconds // 3600}H"
+    return interval_str
 
 # Helper method that generates a python boolean value for .env inputs
 def str_to_bool(s):
