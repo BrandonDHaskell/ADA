@@ -280,22 +280,35 @@ def main():
                     rfid_monitor_shared_var.reset() # clear shared_variable
 
                     # Wait for authorizing member's scan
-                    time.sleep(5)
+                    time.sleep(3)
                     sponsor_obf_id = rfid_monitor_shared_var.get()
 
                     if sponsor_obf_id is not None:
                         # Get sponsor info
                         sponsor_info = db.get_member({"obf_rfid": sponsor_obf_id})
 
-                        if sponsor_info and sponsor_info["member_level"] == "member":
+                        # sponsor is authorized if the following condigions are met:
+                        #   - member_status is "active"
+                        #   - member_level is "member" or higher
+                        if sponsor_info and sponsor_info["member_status"] == "active" and (sponsor_info["member_level"] == "member" or sponsor_info["member_level"] == "admin"):
                             logger.info(f"Sponsor authorized: {sponsor_obf_id}")
                             if guest_is_new:
-                                
                                 logger.info(f"Adding guest: {guest_obf_id}. Sponsored by: {sponsor_obf_id}")
+                                guest_member_info = {
+                                    "obf_rfid": guest_obf_id, 
+                                    "member_level": "guest",
+                                    "membership_status": "active",
+                                    "access_interval": get_temp_access_interval(),
+                                    "member_sponsor": sponsor_obf_id
+                                }
+                                guest_info = db.add_member(guest_member_info)
+                                logger.info(f"New guest added: {guest_info}")
                             else:
                                 logger.info(f"Updating guest: {guest_obf_id}. Sponsored by: {sponsor_obf_id}")
                         else:
                             logger.info("Sponsor not authorized")
+                    
+                    time.sleep(5) # allow time before looping again
 
             else:
                 if mode_state is not None:
