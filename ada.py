@@ -271,7 +271,7 @@ def main():
                     guest_is_new = True
 
                     # If guest is not already in database
-                    if db.get_member({"obf_rfid": obf_id}) is not None:
+                    if db.get_member({"obf_rfid": guest_obf_id}) is not None:
                         guest_is_new = False
 
                     logger.info("Scanning for authorizing member")
