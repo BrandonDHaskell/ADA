@@ -271,10 +271,13 @@ def main():
                     guest_is_new = True
 
                     # If guest is not already in database
-                    if db.get_member({"obf_rfid": guest_obf_id}) is not None:
+                    guest_info = db.get_member({"obf_rfid": guest_obf_id})
+                    logger.info(f"{guest_info}")
+                    if guest_info is not None:
                         guest_is_new = False
 
                     logger.info("Scanning for authorizing member")
+                    rfid_monitor_shared_var.reset() # clear shared_variable
 
                     # Wait for authorizing member's scan
                     time.sleep(5)
@@ -287,6 +290,7 @@ def main():
                         if sponsor_info and sponsor_info["member_level"] == "member":
                             logger.info(f"Sponsor authorized: {sponsor_obf_id}")
                             if guest_is_new:
+                                
                                 logger.info(f"Adding guest: {guest_obf_id}. Sponsored by: {sponsor_obf_id}")
                             else:
                                 logger.info(f"Updating guest: {guest_obf_id}. Sponsored by: {sponsor_obf_id}")
