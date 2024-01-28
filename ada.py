@@ -226,38 +226,32 @@ def main():
     try:
         logger.info("Starting ADA")
         while True:
-            # Check for updates in door_monitor_shared_var
-            door_state = door_monitor_shared_var.get()
-            if door_state is not None:
-                logger.info(f"Door State Updated: {door_state}")
-                # Add notification logic here
-            door_monitor_shared_var.reset()  # Reset after logging the update
-                
             # Set the mode state fron the mode_monitor_shared_var
             mode_state = mode_switch.get_status().lower()
 
             # If 'inactive', then run standard routine logic
             if mode_state == "inactive":
 
-                # Check for updates in rfid_monitor_shared_var
+                # Check for updates to rfid_monitor_shared_var
                 obf_id = rfid_monitor_shared_var.get()
                 if obf_id is not None:
                     logger.info(f"RFID scanned: {obf_id}")
 
                     # Validate against database
-                    is_member = db.get_member({"obf_rfid": obf_id})
-                    if is_member:
-                        logger.info("Access authorized")
-                        # Unlock the door
-                        door_latch.set_status("active")
-                        logger.info("Door unlocked")
+                    member_info = db.get_member({"obf_rfid": obf_id})
+                    if member_info:
+                        if is_member_access_authorized(member_info):
+                            logger.info("Access authorized")
+                            # Unlock the door
+                            door_latch.set_status("active")
+                            logger.info("Door unlocked")
 
-                        # Keep the door unlocked for 7 seconds
-                        time.sleep(7)
+                            # Keep the door unlocked for 7 seconds
+                            time.sleep(7)
 
-                        # Lock the door again
-                        door_latch.set_status("inactive")
-                        logger.info("Door locked")
+                            # Lock the door again
+                            door_latch.set_status("inactive")
+                            logger.info("Door locked")
                     else:
                         logger.info("Access not authorized")
 
@@ -290,7 +284,7 @@ def main():
                         # Get sponsor info
                         sponsor_info = db.get_member({"obf_rfid": sponsor_obf_id})
 
-                        if sponsor_info and sponsor_info["member_level"] == "Member":
+                        if sponsor_info and sponsor_info["member_level"] == "member":
                             logger.info(f"Sponsor authorized: {sponsor_obf_id}")
                             if guest_is_new:
                                 logger.info(f"Adding guest: {guest_obf_id}. Sponsored by: {sponsor_obf_id}")
@@ -302,6 +296,13 @@ def main():
             else:
                 if mode_state is not None:
                     logger.warning(f"Unknown mode state")
+
+            # Check for updates in door_monitor_shared_var
+            door_state = door_monitor_shared_var.get()
+            if door_state is not None:
+                logger.info(f"Door State Updated: {door_state}")
+                # Add notification logic here
+            door_monitor_shared_var.reset()  # Reset after logging the update
 
             # Reset mode_switch for next iteration
             mode_monitor_shared_var.reset()
