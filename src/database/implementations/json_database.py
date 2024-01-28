@@ -83,20 +83,32 @@ class JsonDatabase(DatabaseInterface):
 
     def get_member(self, member_info):
         """
-        Retrieve a member's details from the database
-        Follows python's dictionary return results
-        """
+        Retrieve a member's details from the database.
 
-        # validate an obfuscated RFID is in member_info
-        obf_rfid = self._validate_member_info(member_info)
-        
-        # get member_info from obfuscated RFID
-        member_info = self.data.get(obf_rfid)
-        if member_info:
-            self.logger.debug(f"Retrieved member with ID {obf_rfid}")
-        else:
-            self.logger.debug(f"Member with ID {obf_rfid} not found")
-        return member_info
+        Args:
+            member_info (dict): Dictionary containing the member's information, 
+                            with 'obf_rfid' key being mandatory.
+
+        Returns:
+            dict: The member information if found, None otherwise.
+        """
+        try:
+            # Validate an obfuscated RFID is in member_info
+            obf_rfid = self._validate_member_info(member_info)
+
+            # Get member_info from obfuscated RFID
+            member_info = self.data.get(obf_rfid)
+            if member_info:
+                self.logger.debug(f"Retrieved member with ID {obf_rfid}")
+                return member_info
+            else:
+                self.logger.debug(f"Member with ID {obf_rfid} not found")
+                return None  # Return None if member is not found in the database
+
+        except ValueError as e:
+            # Handle the case where the obf_rfid is not valid
+            self.logger.error(f"Error retrieving member: {e}")
+            return None
     
     def update_member(self, member_info):
         """
