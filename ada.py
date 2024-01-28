@@ -15,7 +15,7 @@ from src.hardware.implementations.pi_gpio_switch_reader import PiGPIOSwitchReade
 from src.hardware.implementations.pi_gpio_switch_operator import PiGPIOSwitchOperator
 from src.hardware.implementations.continuous_mfrc522_scanner import RFIDContinuousMonitor
 from src.utils.threading_shared_variable import SharedVariable
-from src.schemas import member_schema
+from src.schemas.member_schema import member_schema
 
 # Configure basic logging for now
 # TODO - make this an app configuration
