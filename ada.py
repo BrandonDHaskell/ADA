@@ -1,4 +1,5 @@
 import os
+import re
 import logging
 import time
 import isodate
@@ -44,7 +45,15 @@ def _is_member_status_active(member_data):
 # Check membership access interval
 def _is_within_access_interval(interval_str):
     try:
-        repeat, start_str, duration_str = interval_str.split("/")
+        # Extract the repetition count, start date-time, and duration from the interval string
+        match = re.match(r'R(\d*)/(.*?)/(P.*)', interval_str)
+        if not match:
+            raise ValueError("Invalid interval string format")
+
+        repeat_count, start_str, duration_str = match.groups()
+
+        # If repeat_count is empty, it means infinite repetitions; otherwise, convert to int
+        repeat_count = int(repeat_count) if repeat_count else None
 
         # Parse the start time in the scanner's local timezone and duration
         local_tz = ZoneInfo(os.getenv("SCANNER_TIME_ZONE", "UTC"))
@@ -55,7 +64,7 @@ def _is_within_access_interval(interval_str):
         duration = _parse_duration(duration_str)
 
         # Create rule for repeating intervals
-        rule = rrule.rrule(rrule.DAILY, interval=int(os.getenv("TEMP_ACCESS_DAYS", 3)), dtstart=start_time_utc)
+        rule = rrule.rrule(rrule.DAILY, interval=1, dtstart=start_time_utc, count=repeat_count)
 
         # Get current UTC time
         current_time_utc = datetime.now(ZoneInfo("UTC"))
