@@ -273,50 +273,53 @@ def main():
 
                     # If guest is not already in database
                     guest_info = db.get_member({"obf_rfid": guest_obf_id})
-                    logger.info(f"{guest_info}")
                     if guest_info is not None:
                         guest_is_new = False
+                        logger.info(f"Renewing guest: {guest_info}")
 
                     logger.info("Scanning for authorizing member")
                     rfid_monitor_shared_var.reset() # clear shared_variable
 
-                    # Wait for authorizing member's scan
+                    # Wait to allow for RFID tag changes
                     time.sleep(3)
-                    sponsor_obf_id = rfid_monitor_shared_var.get()
 
-                    if sponsor_obf_id is not None:
-                        # Get sponsor info
-                        sponsor_info = db.get_member({"obf_rfid": sponsor_obf_id})
+                    # Get sponsor's RFID
+                    sponsor_obf_id = None
+                    while not sponsor_obf_id:
+                        sponsor_obf_id = rfid_monitor_shared_var.get()
 
-                        # sponsor is authorized if the following condigions are met:
-                        #   - member_status is "active"
-                        #   - member_level is "member" or higher
-                        if sponsor_info and sponsor_info["membership_status"] == "active" and (sponsor_info["member_level"] == "member" or sponsor_info["member_level"] == "admin"):
-                            logger.info(f"Sponsor authorized: {sponsor_obf_id}")
-                            if guest_is_new:
-                                logger.info(f"Adding guest: {guest_obf_id}. Sponsored by: {sponsor_obf_id}")
-                                guest_member_info = {
-                                    "obf_rfid": guest_obf_id, 
-                                    "member_level": "guest",
-                                    "membership_status": "active",
-                                    "access_interval": get_temp_access_interval(),
-                                    "member_sponsor": sponsor_obf_id
-                                }
-                                guest_info = db.add_member(guest_member_info)
-                                logger.info(f"New guest added: {guest_info}")
-                            else:
-                                logger.info(f"Updating guest: {guest_obf_id}. Sponsored by: {sponsor_obf_id}")
-                                guest_member_info = {
-                                    "obf_rfid": guest_obf_id, 
-                                    "member_level": "guest",
-                                    "membership_status": "active",
-                                    "access_interval": get_temp_access_interval(),
-                                    "member_sponsor": sponsor_obf_id
-                                }
-                                guest_info = db.update_member(guest_member_info)
-                                logger.info(f"Updated guest: {guest_info}")
+                    # Get sponsor info from db
+                    sponsor_info = db.get_member({"obf_rfid": sponsor_obf_id})
+
+                    # sponsor is authorized if the following conditions are met:
+                    #   - member_status is "active"
+                    #   - member_level is "member" or higher
+                    if sponsor_info and sponsor_info["membership_status"] == "active" and (sponsor_info["member_level"] == "member" or sponsor_info["member_level"] == "admin"):
+                        logger.info(f"Sponsor authorized: {sponsor_obf_id}")
+                        if guest_is_new:
+                            logger.info(f"Adding guest: {guest_obf_id}. Sponsored by: {sponsor_obf_id}")
+                            guest_member_info = {
+                                "obf_rfid": guest_obf_id, 
+                                "member_level": "guest",
+                                "membership_status": "active",
+                                "access_interval": get_temp_access_interval(),
+                                "member_sponsor": sponsor_obf_id
+                            }
+                            guest_info = db.add_member(guest_member_info)
+                            logger.info(f"New guest added: {guest_info}")
                         else:
-                            logger.info("Sponsor not authorized")
+                            logger.info(f"Updating guest: {guest_obf_id}. Sponsored by: {sponsor_obf_id}")
+                            guest_member_info = {
+                                "obf_rfid": guest_obf_id, 
+                                "member_level": "guest",
+                                "membership_status": "active",
+                                "access_interval": get_temp_access_interval(),
+                                "member_sponsor": sponsor_obf_id
+                            }
+                            guest_info = db.update_member(guest_member_info)
+                            logger.info(f"Updated guest: {guest_info}")
+                    else:
+                        logger.info("Sponsor not authorized")
                     
                     time.sleep(5) # allow time before looping again
 
