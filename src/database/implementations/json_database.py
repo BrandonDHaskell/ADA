@@ -127,6 +127,7 @@ class JsonDatabase(DatabaseInterface):
             self.logger.error(f"Cannot update: Member with ID {obf_rfid} does not exist in the database")
             raise KeyError(f"Member with ID {obf_rfid} not found")
         
+        member_info["last_updated"] = datetime.now().replace(microsecond=0).isoformat()
         self.data[obf_rfid].update(member_info)
         self._save_data()
         self.logger.info(f"Member with RFID {obf_rfid} updated.")
