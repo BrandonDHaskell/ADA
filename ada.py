@@ -322,8 +322,8 @@ def main():
                     else:
                         logger.info("Sponsor not authorized")
                     
-                time.sleep(5) # allow time before looping again
-                rfid_monitor_shared_var.reset()
+                    time.sleep(1) # allow time before looping again
+                    rfid_monitor_shared_var.reset()
 
             else:
                 if mode_state is not None:
