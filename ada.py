@@ -64,6 +64,10 @@ def _is_within_access_interval(interval_str):
         current_interval_start = rule.before(current_time_utc, inc=True)
         current_interval_end = current_interval_start + duration
 
+        # If interval is in the future, value will be none
+        if current_interval_start is None:
+            return False
+        
         # Check if current UTC time is within the interval
         return current_interval_start <= current_time_utc <= current_interval_end
     except Exception as e:
