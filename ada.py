@@ -1,12 +1,13 @@
 import os
 import logging
 import time
-import RPi.GPIO as GPIO
+import isodate
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 from dateutil import parser, rrule
 from zoneinfo import ZoneInfo
 
+import RPi.GPIO as GPIO
 from src.utils.logging_utils import setup_logging
 from src.database.implementations.json_database import JsonDatabase
 from src.hardware.implementations.mfrc522_reader import MFRC522Reader
@@ -72,9 +73,7 @@ def _is_within_access_interval(interval_str):
 # Helper function for access interval resolving
 def _parse_duration(duration_str):
     # Parse the ISO 8601 duration string
-    period = parser.parse(duration_str)
-    return timedelta(days=period.day, hours=period.hour)
-
+    return isodate.parse_duration(duration_str)
 
 
 def is_member_access_authorized(member_data):
@@ -96,7 +95,7 @@ def is_member_access_authorized(member_data):
     elif member_data["member_level"] == "guest" or member_data["member_level"] == "philanthropist":
         
         # If current scan time is within the temp access interval, grant access
-        if _is_within_access_interval(member_data):
+        if _is_within_access_interval(member_data["access_interval"]):
             return True
         return False
     
