@@ -118,7 +118,7 @@ def get_temp_access_interval():
     str: A repeating interval string in ISO 8601 format.
     """
     # Read values from environment variables
-    start_time_str = int(os.getenv("TEMP_ACCESS_DAY_START_TIME", "12:00"))
+    start_time_str = os.getenv("TEMP_ACCESS_DAY_START_TIME", "12:00")
     duration_hours = int(os.getenv("TEMP_ACCESS_DURATION_HOURS", "8"))
     repeat_days = int(os.getenv("TEMP_ACCESS_DAYS", "1"))
 
@@ -287,6 +287,7 @@ def main():
                     sponsor_obf_id = None
                     while not sponsor_obf_id:
                         sponsor_obf_id = rfid_monitor_shared_var.get()
+                        time.sleep(.1)
 
                     # Get sponsor info from db
                     sponsor_info = db.get_member({"obf_rfid": sponsor_obf_id})
@@ -321,7 +322,8 @@ def main():
                     else:
                         logger.info("Sponsor not authorized")
                     
-                    time.sleep(5) # allow time before looping again
+                time.sleep(5) # allow time before looping again
+                rfid_monitor_shared_var.reset()
 
             else:
                 if mode_state is not None:
