@@ -1,5 +1,7 @@
 import json
 from pathlib import Path
+from datetime import datetime
+
 from ..interfaces.database_interface import DatabaseInterface
 
 class JsonDatabase(DatabaseInterface):
@@ -76,6 +78,8 @@ class JsonDatabase(DatabaseInterface):
             self.logger.error(f"Attempt to add existing member with ID {obf_rfid}")
             raise ValueError(f"Member with RFID {obf_rfid} already exists")
         
+        member_info["created"] = datetime.now().replace(microsecond=0).isoformat()
+        member_info["last_updated"] = datetime.now().replace(microsecond=0).isoformat()
         self.data[obf_rfid] = member_info
         self._save_data()
         self.logger.info(f"Member added with RFID {obf_rfid}")
