@@ -305,6 +305,15 @@ def main():
                                 logger.info(f"New guest added: {guest_info}")
                             else:
                                 logger.info(f"Updating guest: {guest_obf_id}. Sponsored by: {sponsor_obf_id}")
+                                guest_member_info = {
+                                    "obf_rfid": guest_obf_id, 
+                                    "member_level": "guest",
+                                    "membership_status": "active",
+                                    "access_interval": get_temp_access_interval(),
+                                    "member_sponsor": sponsor_obf_id
+                                }
+                                guest_info = db.update_member(guest_member_info)
+                                logger.info(f"Updated guest: {guest_info}")
                         else:
                             logger.info("Sponsor not authorized")
                     
