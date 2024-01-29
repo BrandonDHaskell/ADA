@@ -290,7 +290,7 @@ def main():
                         # sponsor is authorized if the following condigions are met:
                         #   - member_status is "active"
                         #   - member_level is "member" or higher
-                        if sponsor_info and sponsor_info["member_status"] == "active" and (sponsor_info["member_level"] == "member" or sponsor_info["member_level"] == "admin"):
+                        if sponsor_info and sponsor_info["membership_status"] == "active" and (sponsor_info["member_level"] == "member" or sponsor_info["member_level"] == "admin"):
                             logger.info(f"Sponsor authorized: {sponsor_obf_id}")
                             if guest_is_new:
                                 logger.info(f"Adding guest: {guest_obf_id}. Sponsored by: {sponsor_obf_id}")
