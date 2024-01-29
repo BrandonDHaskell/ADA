@@ -143,7 +143,7 @@ def get_temp_access_interval():
     duration = timedelta(hours=duration_hours)
 
     # Format the interval in ISO 8601 repeating interval format
-    interval_str = f"R{repeat_days}/{start_of_interval.isoformat()}/P{duration.days}DT{duration.seconds // 3600}H"
+    interval_str = f"R/{start_of_interval.isoformat()}/P{repeat_days}DT{duration.seconds // 3600}H"
     return interval_str
 
 # Helper method that generates a python boolean value for .env inputs
