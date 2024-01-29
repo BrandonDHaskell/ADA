@@ -32,6 +32,7 @@ def _is_valid_member_data(member_data):
     for key, expected_type in member_schema.items():
         if key not in member_data or not isinstance(member_data[key], expected_type):
             raise ValueError(f"Invalid member data for {key}")
+    return True
 
 # Check membership status
 def _is_member_status_active(member_data):
