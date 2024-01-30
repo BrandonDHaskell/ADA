@@ -46,7 +46,7 @@ def _is_member_status_active(member_data):
 def _is_within_access_interval(interval_str):
     try:
         # Extract the repetition count, start date-time, and duration from the interval string
-        match = re.match(r'R(\d*)/(.*?)/(P.*)', interval_str)
+        match = re.match(r"R(\d*)/(.*?)/(P.*)", interval_str)
         if not match:
             raise ValueError("Invalid interval string format")
 
