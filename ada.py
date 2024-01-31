@@ -136,7 +136,7 @@ def get_temp_access_interval():
     repeat_days = int(os.getenv("TEMP_ACCESS_DAYS", "1"))
 
     # Current UTC date and time
-    current_utc = datetime.now(ZoneInfo("UTC"))
+    current_utc = datetime.now(ZoneInfo("Etc/UTC"))
 
     # Parse start hour and minute
     start_hour, start_minute = map(int, start_time_str.split(':'))
@@ -152,7 +152,7 @@ def get_temp_access_interval():
     duration = timedelta(hours=duration_hours)
 
     # Format the interval in ISO 8601 repeating interval format
-    interval_str = f"R/{start_of_interval.isoformat()}/P{repeat_days}DT{duration.seconds // 3600}H"
+    interval_str = f"R{repeat_days}/{start_of_interval.isoformat()}/PDT{duration.seconds // 3600}H"
     return interval_str
 
 # Helper method that generates a python boolean value for .env inputs
