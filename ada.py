@@ -266,6 +266,8 @@ def main():
                             # Lock the door again
                             door_latch.set_status("inactive")
                             logger.info("Door locked")
+                        else:
+                            logger.info("Access not authorized")    
                     else:
                         logger.info("Access not authorized")
 
@@ -351,7 +353,7 @@ def main():
 
             # Reset mode_switch for next iteration
             mode_monitor_shared_var.reset()
-            time.sleep(0.05)
+            time.sleep(0.5)
     except KeyboardInterrupt:
         logger.info("Keyboard interrupt detected. Shutting down ADA...")
 
