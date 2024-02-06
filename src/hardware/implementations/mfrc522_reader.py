@@ -1,5 +1,6 @@
-import hashlib
+import hmac
 import base64
+import os
 import RPi.GPIO as GPIO
 from mfrc522 import SimpleMFRC522
 from src.hardware.interfaces.rfid_reader_interface import RFIDScanner
@@ -13,6 +14,7 @@ class MFRC522Reader(RFIDScanner):
         self.config = config
         super().__init__(config)
         self.reader = SimpleMFRC522()
+        self.secret_key = config.get('hmac_secret_key', os.getenv('HMAC_SECRET_KEY', 'default_secret_key'))
         self.initialize()
 
     def initialize(self):
@@ -30,9 +32,8 @@ class MFRC522Reader(RFIDScanner):
     # Hash ID using sha256 and encode in base64
     # this could be updated to hex if needed
     def _hash_id(self, raw_id):
-        hash_obj = hashlib.sha256()
-        hash_obj.update(raw_id.encode('utf-8'))
-        return base64.b64encode(hash_obj.digest()).decode()
+        hmac_obj = hmac.new(self.secret_key.encode("utf-8"), msg=raw_id.encode("utf-8"), digestmod="sha256")
+        return hmac_obj.hexdigest()
     
     def cleanup(self):
         # Cleanup GPIO resources
