@@ -67,12 +67,11 @@ class AddMemberModeManager:
             Loop until sponsor ID is scanned and guest ID is scanned
             Then determine if sponsor can sponsor the guest
             """
+            # Scan for and RFID
+            obf_id = rfid_monitor_shared_var.get()
 
             # Get sponsor ID first and run validation checks
-            if sponsor_obf_id is None:
-                
-                # Scann sponsor ID
-                sponsor_obf_id = rfid_monitor_shared_var.get()
+            if obf_id is not None and sponsor_obf_id is None:
 
                 logger.info(f"Sponsor RFID scanned: {sponsor_obf_id}")
                 sponsor_member_info = db.get_member({"obf_rfid": sponsor_obf_id})
@@ -87,7 +86,7 @@ class AddMemberModeManager:
                     # stop thread
 
             # Get guest ID and determine if adding or updating
-            if sponsor_obf_id is not None and guest_obf_id is None:
+            if obf_id is not None and sponsor_obf_id is not None and guest_obf_id is None:
                 
                 # Scan guest ID
                 guest_obf_id = rfid_monitor_shared_var.get()
