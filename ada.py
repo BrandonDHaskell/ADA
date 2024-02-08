@@ -57,7 +57,6 @@ class AddMemberModeManager:
         sponsor_obf_id = None
         guest_obf_id = None
         is_valid_sponsor = False
-        continue_loop = True
 
         # Loop until one of these occurs:
             #   + timeout
@@ -80,11 +79,12 @@ class AddMemberModeManager:
                 # Check if sponsor is in DB and is a valid sponsor
                 if sponsor_member_info is not None and is_valid_sponsor(sponsor_member_info):
                     is_valid_sponsor = True
+                    sponsor_obf_id = obf_id
                     # TODO - notify user
                     logger.info(f"Sponsor is authorized")
                 else:
                     logger.info("Sponsor not authorized")
-                    continue_loop = False
+                    obf_id = None
                     # stop thread
 
             # Get guest ID and determine if adding or updating
@@ -118,10 +118,8 @@ class AddMemberModeManager:
                         db.add_member(guest_member_info)
                         logger.info(f"Guest added: {guest_member_info}")
 
-            if continue_loop:
-                stop_event.wait(timeout=1)
-            else:
-                stop_event.clear()
+
+            stop_event.wait(timeout=1)
 
 # Check to confirm member data format follows ADA member_schema
 def _is_valid_member_data(member_data):
