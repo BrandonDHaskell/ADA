@@ -80,44 +80,41 @@ class AddMemberModeManager:
                 if sponsor_member_info is not None and is_valid_sponsor(sponsor_member_info):
                     is_valid_sponsor = True
                     sponsor_obf_id = obf_id
+                    obf_id = None
                     # TODO - notify user
                     logger.info(f"Sponsor is authorized")
                 else:
                     logger.info("Sponsor not authorized")
                     obf_id = None
-                    # stop thread
 
             # Get guest ID and determine if adding or updating
-            if obf_id is not None and sponsor_obf_id is not None and guest_obf_id is None:
+            if is_valid_sponsor and obf_id is not None and guest_obf_id is None:
                 
                 # Scan guest ID
-                guest_obf_id = rfid_monitor_shared_var.get()
+                guest_obf_id = obf_id
+                obf_id = None
                 logger.info(f"Guest RFID scanned: {guest_obf_id}")
 
-                # if guest_obf_id was scanned, determine if guest is updating or creating a record
-                if is_valid_sponsor and guest_obf_id is not None:
+                # Assume guest is new and check if renewing temp access
+                guest_is_new = True
 
-                    # Assume guest is new and check if renewing temp access
-                    guest_is_new = True
-
-                    # Check if Guest exists in DB
-                    guest_member_info = db.get_member({"obf_rfid": guest_obf_id})
-                    if guest_member_info is not None:
-                        guest_is_new = False
-                        logger.info(f"Renewing guest temp access: {guest_obf_id}")
-                    else:
-                        guest_member_info = {
-                            "obf_rfid": guest_obf_id,
-                            "member_level": "guest",
-                            "membership_status": "active",
-                            "access_interval": get_temp_access_interval(),
-                            "member_sponsor": sponsor_obf_id,
-                            "created": "",
-                            "last_updated": ""
-                        }
-                        db.add_member(guest_member_info)
-                        logger.info(f"Guest added: {guest_member_info}")
-
+                # Check if Guest exists in DB
+                guest_member_info = db.get_member({"obf_rfid": guest_obf_id})
+                if guest_member_info is not None:
+                    guest_is_new = False
+                    logger.info(f"Renewing guest temp access: {guest_obf_id}")
+                else:
+                    guest_member_info = {
+                        "obf_rfid": guest_obf_id,
+                        "member_level": "guest",
+                        "membership_status": "active",
+                        "access_interval": get_temp_access_interval(),
+                        "member_sponsor": sponsor_obf_id,
+                        "created": "",
+                        "last_updated": ""
+                    }
+                    db.add_member(guest_member_info)
+                    logger.info(f"Guest added: {guest_member_info}")
 
             stop_event.wait(timeout=1)
 
