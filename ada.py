@@ -84,7 +84,7 @@ class AddMemberModeManager:
                 sponsor_member_info = db.get_member({"obf_rfid": sponsor_obf_id})
 
                 # Check if sponsor is in DB and is a valid sponsor
-                if sponsor_member_info is not None and is_valid_sponsor(sponsor_member_info):
+                if sponsor_member_info is not None and AddMemberModeManager.is_valid_sponsor(sponsor_member_info):
                     is_valid_sponsor = True
                     # TODO - notify user
                     logger.info(f"Sponsor is authorized")
