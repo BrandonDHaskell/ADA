@@ -367,10 +367,11 @@ def main():
                     rfid_monitor_shared_var.reset()
 
             # If 'active', then run add member logic
-            elif mode_state == "active" and not add_member_mode_manager.is_active():
-                # Start active mode thread if not already running
-                add_member_mode_manager.start_add_member_mode(db, rfid_monitor_shared_var, get_temp_access_interval)
-                logger.info("Add Member Mode processing started")
+            elif mode_state == "active":
+                if not add_member_mode_manager.is_active():
+                    # Start active mode thread if not already running
+                    add_member_mode_manager.start_add_member_mode(db, rfid_monitor_shared_var, get_temp_access_interval)
+                    logger.info("Add Member Mode processing started")
             elif mode_state == "inactive":
                 if add_member_mode_manager.is_active():
                     # Stop the active mode thread if it's running and we're no longer in active mode
