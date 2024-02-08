@@ -125,9 +125,7 @@ class AddMemberModeManager:
                     db.add_member(guest_member_info)
                     logger.info(f"Guest added: {guest_member_info}")
 
-            if stop_event.wait(timeout=1):
-                logger.info("Active mode processing thread is stopping")
-                break
+            stop_event.wait(timeout=1)
 
 # Check to confirm member data format follows ADA member_schema
 def _is_valid_member_data(member_data):
@@ -350,8 +348,8 @@ def main():
                 # Confirm Add Member Mode thread is stopped
                 if add_member_mode_manager.is_active():
                     # Stop the active mode thread if it's running and we're no longer in active mode
-                    logger.info("Stopping Add Member Mode processing")
                     add_member_mode_manager.stop_add_member_mode()
+                    logger.info("Add Member mode stopped")
 
                 # Check for updates to rfid_monitor_shared_var
                 obf_id = rfid_monitor_shared_var.get()
@@ -385,8 +383,8 @@ def main():
             elif mode_state == "active":
                 if not add_member_mode_manager.is_active():
                     # Start active mode thread if not already running
-                    logger.info("Add Member Mode processing starting")
-                    add_member_mode_manager.start_add_member_mode(db, rfid_monitor_shared_var, get_temp_access_interval)                    
+                    add_member_mode_manager.start_add_member_mode(db, rfid_monitor_shared_var, get_temp_access_interval)
+                    logger.info("Add Member Mode started")
             else:
                 if mode_state is not None:
                     logger.warning(f"Unknown mode state")
