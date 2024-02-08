@@ -72,6 +72,10 @@ class AddMemberModeManager:
             Loop until sponsor ID is scanned and guest ID is scanned
             Then determine if sponsor can sponsor the guest
             """
+            if stop_event.is_set():
+                logger.info("Stop event received, terminating active mode processing.")
+                break
+
             # Scan for and RFID
             obf_id = rfid_monitor_shared_var.get()
             rfid_monitor_shared_var.reset()
@@ -121,7 +125,9 @@ class AddMemberModeManager:
                     db.add_member(guest_member_info)
                     logger.info(f"Guest added: {guest_member_info}")
 
-            stop_event.wait(timeout=1)
+            if stop_event.wait(timeout=1):
+                logger.info("Active mode processing thread is stopping")
+                break
 
 # Check to confirm member data format follows ADA member_schema
 def _is_valid_member_data(member_data):
