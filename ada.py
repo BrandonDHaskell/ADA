@@ -394,6 +394,11 @@ def main():
         logger.info("Keyboard interrupt detected. Shutting down ADA...")
 
     finally:
+        # Stop procesing Add Memebers
+        if add_member_mode_manager.is_active():
+            logger.info("Stopping Add Member Mode processing...")
+            add_member_mode_manager.stop_add_member_mode()
+
         # Stopping the monitors before exiting (cleanup)
         rfid_monitor.stop_monitoring()
         door_monitor.stop_monitoring()
