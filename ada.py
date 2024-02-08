@@ -32,14 +32,14 @@ else:
 
 class AddMemberModeManager:
     def __init__(self):
-        self.add_member_thread = None
         self.thread_stop_event = Event()
+        self.add_member_thread = None
 
-    def start_add_member_mode(self):
-        if self.is_active():
-            self.thread_stop_event.set()
-            self.add_member_thread.join()
-            self.add_member_thread = None
+    def start_add_member_mode(self, db, rfid_monitor_shared_var, get_temp_access_interval):
+        if not self.is_active():
+            self.thread_stop_event.clear()
+            self.thread = Thread(target=self.handle_active_mode, args=(db, rfid_monitor_shared_var, get_temp_access_interval, self.thread_stop_event))
+            self.thread.start()
 
     def stop_add_member_mode(self):
         if self.is_active():
@@ -48,7 +48,7 @@ class AddMemberModeManager:
             self.active_mode_thread = None
 
     def is_active(self):
-        return self.add_member_thread is not None and self.add_member_thread.is_alive()
+        return self.thread is not None and self.thread.is_alive()
     
     @staticmethod
     def handle_active_mode(db, rfid_monitor_shared_var, get_temp_access_interval, stop_event):
