@@ -72,20 +72,19 @@ class AddMemberModeManager:
 
             # Get sponsor ID first and run validation checks
             if obf_id is not None and sponsor_obf_id is None:
-
+                sponsor_obf_id = obf_id
+                obf_id = None
                 logger.info(f"Sponsor RFID scanned: {sponsor_obf_id}")
                 sponsor_member_info = db.get_member({"obf_rfid": sponsor_obf_id})
 
                 # Check if sponsor is in DB and is a valid sponsor
                 if sponsor_member_info is not None and is_valid_sponsor(sponsor_member_info):
                     is_valid_sponsor = True
-                    sponsor_obf_id = obf_id
-                    obf_id = None
                     # TODO - notify user
                     logger.info(f"Sponsor is authorized")
                 else:
                     logger.info("Sponsor not authorized")
-                    obf_id = None
+                    sponsor_obf_id = None
 
             # Get guest ID and determine if adding or updating
             if is_valid_sponsor and obf_id is not None and guest_obf_id is None:
