@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from datetime import datetime, timedelta
 from dateutil import parser, rrule
 from zoneinfo import ZoneInfo
+from threading import Thread, Event
 
 import RPi.GPIO as GPIO
 from src.utils.logging_utils import setup_logging
@@ -28,6 +29,90 @@ if load_dotenv():
     logger.info("Environment variables loaded")
 else:
     logger.info("No environment variables passed, loading defaults")
+
+class AddMemberModeManager:
+    def __init__(self):
+        self.add_member_thread = None
+        self.thread_stop_event = Event()
+
+    def start_active_mode(self):
+        if self.is_active():
+            self.thread_stop_event.set()
+            self.add_member_thread.join()
+            self.add_member_thread = None
+
+    def is_active(self):
+        return self.add_member_thread is not None and self.add_member_thread.is_alive()
+    
+    @staticmethod
+    def handle_active_mode(db, rfid_monitor_shared_var, get_temp_access_interval, stop_event):
+        guest_member_info = {}
+        sponsor_member_info = {}
+        sponsor_obf_id = None
+        guest_obf_id = None
+        is_valid_sponsor = False
+
+        # Loop until one of these occurs:
+            #   + timeout
+            #   + add/update guest to DB
+            #   + sponsor not authorized
+        while not stop_event.is_set():
+            """
+            Loop until sponsor ID is scanned and guest ID is scanned
+            Then determine if sponsor can sponsor the guest
+            """
+
+            # Get sponsor ID first and run validation checks
+            if sponsor_obf_id is None:
+                
+                # Scann sponsor ID
+                sponsor_obf_id = rfid_monitor_shared_var.get()
+
+                logger.info(f"Sponsor RFID scanned: {sponsor_obf_id}")
+                sponsor_member_info = db.get_member({"obf_rfid": sponsor_obf_id})
+
+                # Check if sponsor is in DB and is a valid sponsor
+                if sponsor_member_info is not None and is_valid_sponsor(sponsor_member_info):
+                    is_valid_sponsor = True
+                    # TODO - notify user
+                    logger.info(f"Sponsor is authorized")
+                else:
+                    logger.info("Sponsor not authorized")
+                    # stop thread
+
+            # Get guest ID and determine if adding or updating
+            if sponsor_obf_id is not None and guest_obf_id is None:
+                
+                # Scan guest ID
+                guest_obf_id = rfid_monitor_shared_var.get()
+                logger.info(f"Guest RFID scanned: {guest_obf_id}")
+
+                # if guest_obf_id was scanned, determine if guest is updating or creating a record
+                if is_valid_sponsor and guest_obf_id is not None:
+
+                    # Assume guest is new and check if renewing temp access
+                    guest_is_new = True
+
+                    # Check if Guest exists in DB
+                    guest_member_info = db.get_member({"obf_rfid": guest_obf_id})
+                    if guest_member_info is not None:
+                        guest_is_new = False
+                        logger.info(f"Renewing guest temp access: {guest_obf_id}")
+                    else:
+                        guest_member_info = {
+                            "obf_rfid": guest_obf_id,
+                            "member_level": "guest",
+                            "membership_status": "active",
+                            "access_interval": get_temp_access_interval(),
+                            "member_sponsor": sponsor_obf_id,
+                            "created": "",
+                            "last_updated": ""
+                        }
+                        db.add_member(guest_member_info)
+                        logger.info(f"Guest added: {guest_member_info}")
+
+
+            stop_event.wait(timeout=1)
 
 # Check to confirm member data format follows ADA member_schema
 def _is_valid_member_data(member_data):
