@@ -44,8 +44,8 @@ class AddMemberModeManager:
     def stop_add_member_mode(self):
         if self.is_active():
             self.thread_stop_event.set()
-            self.active_mode_thread.join()
-            self.active_mode_thread = None
+            self.thread.join()
+            self.thread = None
 
     def is_active(self):
         return self.thread is not None and self.thread.is_alive()
