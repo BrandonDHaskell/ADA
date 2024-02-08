@@ -33,7 +33,7 @@ else:
 class AddMemberModeManager:
     def __init__(self):
         self.thread_stop_event = Event()
-        self.add_member_thread = None
+        self.thread = None
 
     def start_add_member_mode(self, db, rfid_monitor_shared_var, get_temp_access_interval):
         if not self.is_active():
