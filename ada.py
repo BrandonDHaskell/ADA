@@ -74,6 +74,7 @@ class AddMemberModeManager:
             """
             # Scan for and RFID
             obf_id = rfid_monitor_shared_var.get()
+            rfid_monitor_shared_var.reset()
 
             # Get sponsor ID first and run validation checks
             if obf_id is not None and sponsor_obf_id is None:
