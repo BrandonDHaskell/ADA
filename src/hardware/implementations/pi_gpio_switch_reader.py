@@ -1,3 +1,4 @@
+import threading
 import RPi.GPIO as GPIO
 from src.hardware.interfaces.toggle_interface import ToggleReaderInterface
 
@@ -24,6 +25,7 @@ class PiGPIOSwitchReader(ToggleReaderInterface):
         self.normally_open = config.get("normally_open", True)
         self.common_to_ground = config.get("common_to_ground", True )
         self.pin_number = config["pin_number"] # Assumes pin_number is provided (TODO - add error checking)
+        self.lock = threading.Lock()
         super().__init__(config)
         
         self.logger.info(f"Initializing PiGPIOSwitchReader: pin_number={self.pin_number}, normally_open={self.normally_open}, common_to_ground={self.common_to_ground}")
@@ -40,14 +42,15 @@ class PiGPIOSwitchReader(ToggleReaderInterface):
             self.logger.debug(f"GPIO pin {self.pin_number} set as INPUT with PULL_DOWN")
 
     def get_status(self):
-        pin_state = GPIO.input(self.pin_number)
-        # Determines status based on normally_open configuration
-        if self.normally_open:
-            status = "inactive" if pin_state == GPIO.HIGH else "active"
-        else:
-            status = "active" if pin_state == GPIO.HIGH else "inactive"
-        self.logger.debug(f"Read status from pin {self.pin_number}: {status}")
-        return status
+        with self.lock:
+            pin_state = GPIO.input(self.pin_number)
+            # Determines status based on normally_open configuration
+            if self.normally_open:
+                status = "inactive" if pin_state == GPIO.HIGH else "active"
+            else:
+                status = "active" if pin_state == GPIO.HIGH else "inactive"
+            self.logger.debug(f"Read status from pin {self.pin_number}: {status}")
+            return status
         
     def cleanup(self):
         # GPIO.cleanup(self.pin_number)
