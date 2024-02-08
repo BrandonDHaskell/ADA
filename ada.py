@@ -50,6 +50,11 @@ class AddMemberModeManager:
     def is_active(self):
         return self.thread is not None and self.thread.is_alive()
     
+    def is_valid_sponsor(member_info):
+        if member_info["membership_status"] == "active" and (member_info["member_level"] == "member" or member_info["member_level"] == "admin"):
+            return True
+        return False
+
     @staticmethod
     def handle_active_mode(db, rfid_monitor_shared_var, get_temp_access_interval, stop_event):
         guest_member_info = {}
