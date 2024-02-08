@@ -35,11 +35,17 @@ class AddMemberModeManager:
         self.add_member_thread = None
         self.thread_stop_event = Event()
 
-    def start_active_mode(self):
+    def start_add_member_mode(self):
         if self.is_active():
             self.thread_stop_event.set()
             self.add_member_thread.join()
             self.add_member_thread = None
+
+    def stop_add_member_mode(self):
+        if self.is_active():
+            self.thread_stop_event.set()
+            self.active_mode_thread.join()
+            self.active_mode_thread = None
 
     def is_active(self):
         return self.add_member_thread is not None and self.add_member_thread.is_alive()
@@ -245,6 +251,8 @@ def str_to_bool(s):
     return s.lower() in ("true", "t", "1", "yes")
 
 def main():
+    add_member_mode_manager = AddMemberModeManager()
+
     GPIO.setmode(GPIO.BCM)
     
     """
@@ -360,71 +368,14 @@ def main():
                     rfid_monitor_shared_var.reset()
 
             # If 'active', then run add member logic
-            elif mode_state == "active":
-                # Get guest ID first
-                guest_obf_id = rfid_monitor_shared_var.get()
-
-                # if guest_obf_id was scanned and the ID is not in the database
-                if guest_obf_id is not None:
-                    logger.info(f"Guest ID scanned: {guest_obf_id}")
-
-                    # Assume guest is new and check if renewing temp access
-                    guest_is_new = True
-
-                    # If guest is not already in database
-                    guest_info = db.get_member({"obf_rfid": guest_obf_id})
-                    if guest_info is not None:
-                        guest_is_new = False
-                        logger.info(f"Renewing guest: {guest_info}")
-
-                    logger.info("Scanning for authorizing member")
-                    rfid_monitor_shared_var.reset() # clear shared_variable
-
-                    # Wait to allow for RFID tag changes
-                    time.sleep(3)
-
-                    # Get sponsor's RFID
-                    sponsor_obf_id = None
-                    while not sponsor_obf_id:
-                        sponsor_obf_id = rfid_monitor_shared_var.get()
-                        time.sleep(.1)
-
-                    # Get sponsor info from db
-                    sponsor_info = db.get_member({"obf_rfid": sponsor_obf_id})
-
-                    # sponsor is authorized if the following conditions are met:
-                    #   - member_status is "active"
-                    #   - member_level is "member" or higher
-                    if sponsor_info and sponsor_info["membership_status"] == "active" and (sponsor_info["member_level"] == "member" or sponsor_info["member_level"] == "admin"):
-                        logger.info(f"Sponsor authorized: {sponsor_obf_id}")
-                        if guest_is_new:
-                            logger.info(f"Adding guest: {guest_obf_id}. Sponsored by: {sponsor_obf_id}")
-                            guest_member_info = {
-                                "obf_rfid": guest_obf_id, 
-                                "member_level": "guest",
-                                "membership_status": "active",
-                                "access_interval": get_temp_access_interval(),
-                                "member_sponsor": sponsor_obf_id
-                            }
-                            guest_info = db.add_member(guest_member_info)
-                            logger.info(f"New guest added: {guest_info}")
-                        else:
-                            logger.info(f"Updating guest: {guest_obf_id}. Sponsored by: {sponsor_obf_id}")
-                            guest_member_info = {
-                                "obf_rfid": guest_obf_id, 
-                                "member_level": "guest",
-                                "membership_status": "active",
-                                "access_interval": get_temp_access_interval(),
-                                "member_sponsor": sponsor_obf_id
-                            }
-                            guest_info = db.update_member(guest_member_info)
-                            logger.info(f"Updated guest: {guest_info}")
-                    else:
-                        logger.info("Sponsor not authorized")
-                    
-                    time.sleep(1) # allow time before looping again
-                    rfid_monitor_shared_var.reset()
-
+            elif mode_state == "active" and not add_member_mode_manager.is_active():
+                # Start active mode thread if not already running
+                add_member_mode_manager.start_add_member_mode(db, rfid_monitor_shared_var, get_temp_access_interval)
+                logger.info("Add Member Mode processing started")
+            elif mode_state != "active" and add_member_mode_manager.is_active():
+                # Stop the active mode thread if it's running and we're no longer in active mode
+                add_member_mode_manager.stop_add_member_mode()
+                logger.info("Add Member Mode processing stopped")
             else:
                 if mode_state is not None:
                     logger.warning(f"Unknown mode state")
