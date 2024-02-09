@@ -127,6 +127,17 @@ class AddMemberModeManager:
 
             stop_event.wait(timeout=1)
 
+class DoorManager:
+    def __init__(self, door_latch):
+        self.door_latch = door_latch
+
+    def unlock_door_for_duration(self, duration=7):
+        self.door_latch.set_status("active")  # Unlock the door
+        logger.info("Door unlocked")
+        time.sleep(duration)  # Keep the door unlocked for the specified duration
+        self.door_latch.set_status("inactive")  # Lock the door again
+        logger.info("Door locked")
+
 # Check to confirm member data format follows ADA member_schema
 def _is_valid_member_data(member_data):
     for key, expected_type in member_schema.items():
@@ -258,8 +269,6 @@ def str_to_bool(s):
     return s.lower() in ("true", "t", "1", "yes")
 
 def main():
-    add_member_mode_manager = AddMemberModeManager()
-
     GPIO.setmode(GPIO.BCM)
     
     """
@@ -336,6 +345,8 @@ def main():
     # mode_monitor.start_monitoring()
     rfid_monitor.start_monitoring()
     
+    add_member_mode_manager = AddMemberModeManager()
+    door_manager = DoorManager(door_latch)
 
     try:
         logger.info("Starting ADA")
@@ -361,16 +372,20 @@ def main():
                     if member_info:
                         if is_member_access_authorized(member_info):
                             logger.info("Access authorized")
-                            # Unlock the door
-                            door_latch.set_status("active")
-                            logger.info("Door unlocked")
+                            # Start a thread to unlock the door for a duration without blocking the main thread
+                            door_unlock_thread = Thread(target=door_manager.unlock_door_for_duration, args=(int(os.getenv("DOOR_UNLOCK_DURATION_SEC", 7)),))
+                            door_unlock_thread.start()
+                            
+                            # # Unlock the door
+                            # door_latch.set_status("active")
+                            # logger.info("Door unlocked")
 
-                            # Keep the door unlocked for 7 seconds
-                            time.sleep(7)
+                            # # Keep the door unlocked for 7 seconds
+                            # time.sleep(7)
 
-                            # Lock the door again
-                            door_latch.set_status("inactive")
-                            logger.info("Door locked")
+                            # # Lock the door again
+                            # door_latch.set_status("inactive")
+                            # logger.info("Door locked")
                         else:
                             logger.info("Access not authorized")    
                     else:
@@ -407,6 +422,9 @@ def main():
         if add_member_mode_manager.is_active():
             logger.info("Stopping Add Member Mode processing...")
             add_member_mode_manager.stop_add_member_mode()
+
+        if 'door_unlock_thread' in locals() and door_unlock_thread.is_alive():
+            door_unlock_thread.join()
 
         # Stopping the monitors before exiting (cleanup)
         rfid_monitor.stop_monitoring()
