@@ -254,8 +254,8 @@ def get_temp_access_interval():
     start_of_interval = current_utc.replace(hour=start_hour, minute=start_minute, second=0, microsecond=0)
 
     # Adjust if the start time has already passed for today
-    if start_of_interval < current_utc:
-        start_of_interval += timedelta(days=1)
+    #if start_of_interval < current_utc:
+    #    start_of_interval += timedelta(days=1)
 
     # Duration of the access interval
     duration = timedelta(hours=duration_hours)
